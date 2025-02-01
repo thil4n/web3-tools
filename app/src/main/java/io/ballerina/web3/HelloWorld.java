@@ -1,4 +1,4 @@
-package app.src.main.java.org.example;
+package app.src.main.java.io.ballerina.web3;
 
 import java.io.File;
 import java.io.FileNotFoundException;
