@@ -21,6 +21,9 @@ dependencies {
 
     // This dependency is used by the application.
     implementation(libs.guava)
+
+    // Jackson for JSON Parsing
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.0")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -32,5 +35,5 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "io.ballerina.App"
+    mainClass = "io.ballerina.web3.AbiReader"
 }
