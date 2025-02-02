@@ -35,5 +35,5 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "io.ballerina.web3.AbiReader"
+    mainClass = "io.ballerina.web3.Main"
 }
