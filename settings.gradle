@@ -29,11 +29,11 @@ plugins {
 }
 
 rootProject.name = 'web3-tools'
-include(':checkstyle')
-// include(':graphql-cli')
+// include(':checkstyle')
+include(':app')
 // include(':graphql-schema-file-generator')
 // include(':graphql-code-generator')
-project(':checkstyle').projectDir = file("config${File.separator}checkstyle")
+// project(':checkstyle').projectDir = file("config${File.separator}checkstyle")
 
 gradleEnterprise {
     buildScan {

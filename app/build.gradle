@@ -27,8 +27,14 @@ configurations {
 }
 
 dependencies {
-    checkstyle project(':checkstyle')
-    checkstyle "com.puppycrawl.tools:checkstyle:${project.checkstylePluginVersion}"
+    // checkstyle project(':checkstyle')
+    // checkstyle "com.puppycrawl.tools:checkstyle:${project.checkstylePluginVersion}"
+
+        // Jackson for JSON Parsing
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.15.0"
+
+    // Keccak 256
+    implementation "org.bouncycastle:bcprov-jdk15on:1.70"
 
     implementation "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
     implementation "org.ballerinalang:ballerina-parser:${ballerinaLangVersion}"
@@ -47,6 +53,12 @@ dependencies {
         transitive = false
     }
 }
+
+
+application {
+    mainClass = "io.ballerina.web3.Main"
+}
+
 
 // def excludePattern = '**/module-info.java'
 // tasks.withType(Checkstyle) {

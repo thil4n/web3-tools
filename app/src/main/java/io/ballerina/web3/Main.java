@@ -19,7 +19,7 @@
 package io.ballerina.web3;
 
 import io.ballerina.web3.abi.AbiReader;
-import static io.ballerina.compiler.syntax.tree.*;
+import  io.ballerina.compiler.syntax.tree.*;
 
 
 public class Main {

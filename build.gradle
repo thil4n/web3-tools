@@ -33,8 +33,8 @@ allprojects {
     group = project.group
     version = project.version
 
-    apply plugin: 'checkstyle'
-    apply plugin: 'maven-publish'
+    // apply plugin: 'checkstyle'
+    // apply plugin: 'maven-publish'
 
     repositories {
         mavenLocal()
