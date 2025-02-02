@@ -17,6 +17,8 @@
 
 plugins {
     id "com.github.johnrengelman.shadow"
+    id 'application'  // ✅ Ensure this is included
+
 }
 
 configurations {
