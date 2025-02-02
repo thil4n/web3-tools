@@ -1,8 +1,8 @@
-package io.ballerina.web3;
+package io.ballerina.web3.abi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AbiOutput {
+public class AbiInput {
     @JsonProperty("name")
     private String name;
 
@@ -24,5 +24,4 @@ public class AbiOutput {
     public String getInternalType() {
         return internalType;
     }
-    
 }

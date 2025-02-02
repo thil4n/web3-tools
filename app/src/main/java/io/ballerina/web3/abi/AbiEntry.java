@@ -1,4 +1,4 @@
-package io.ballerina.web3;
+package io.ballerina.web3.abi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
