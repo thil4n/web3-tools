@@ -9,6 +9,9 @@ public class AbiInput {
     @JsonProperty("type")
     private String type;
 
+    @JsonProperty("internalType")
+    private String internalType;
+
 
     public String getName() {
         return name;
@@ -16,5 +19,9 @@ public class AbiInput {
 
     public String getType() {
         return type;
+    }
+
+    public String getInternalType() {
+        return internalType;
     }
 }

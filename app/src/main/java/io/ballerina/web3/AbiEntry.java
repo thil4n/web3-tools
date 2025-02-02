@@ -19,6 +19,9 @@ public class AbiEntry {
     @JsonProperty("outputs")
     private List<AbiOutput> outputs;
 
+    @JsonProperty("constant")
+    private String constant;
+
 
 
     public String getName() {
@@ -40,4 +43,9 @@ public class AbiEntry {
     public String getType() {
         return type;
     }
+
+    public String getConstant() {
+        return constant;
+    }
+
 }
