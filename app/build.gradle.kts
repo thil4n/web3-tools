@@ -24,6 +24,10 @@ dependencies {
 
     // Jackson for JSON Parsing
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.0")
+
+    // Keccak 256
+    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
+
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

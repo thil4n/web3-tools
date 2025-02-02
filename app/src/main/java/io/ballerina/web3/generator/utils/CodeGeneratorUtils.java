@@ -18,31 +18,41 @@
 
 package io.ballerina.web3.generator.utils;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.nio.charset.StandardCharsets;
+import org.bouncycastle.jcajce.provider.digest.Keccak;
+
+import io.ballerina.web3.abi.AbiEntry;
+import io.ballerina.web3.abi.AbiInput;
 
 public class CodeGeneratorUtils {
 
 
-    private String  hashKeccak256(String str) throws NoSuchAlgorithmException{
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256"); 
-
-            byte[] hash =  messageDigest.digest(str.getBytes());
-            return hash.toString();
+    public static String hashKeccak256(String str) {
+        Keccak.Digest256 digest = new Keccak.Digest256();
+        byte[] hash = digest.digest(str.getBytes(StandardCharsets.UTF_8));
+        return bytesToHex(hash);
     }
 
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : bytes) {
+            hexString.append(String.format("%02x", b));
+        }
+        return hexString.toString();
+    }
 
-    public String generateFunctionSelector(String functionName, String[] parameters) throws NoSuchAlgorithmException{
+    public static String generateFunctionSelector(AbiEntry abi){
 
-        String str = functionName + "(";
+        String str = abi.getName() + "(";
         
-        for (String param : parameters) {
-            str += param;
+        for (AbiInput param : abi.getInputs()) {
+            str += param.getType();
         }
         
         str += ")";
 
-        String hash = this.hashKeccak256(str);
+        String hash = hashKeccak256(str);
+
         return hash.substring(0, 8);
     }
 }

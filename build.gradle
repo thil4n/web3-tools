@@ -1,0 +1,219 @@
+/*
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+plugins {
+    id 'java-library'
+    id 'jacoco'
+    id "com.github.johnrengelman.shadow"
+    id "de.undercouch.download"
+    id "net.researchgate.release"
+}
+
+def packageName = "graphql"
+
+dependencies {
+    implementation project(':graphql-schema-file-generator')
+    implementation project(':graphql-code-generator')
+    implementation project(':graphql-cli')
+}
+
+allprojects {
+    group = project.group
+    version = project.version
+
+    apply plugin: 'checkstyle'
+    apply plugin: 'maven-publish'
+
+    repositories {
+        mavenLocal()
+
+        maven {
+            url = 'https://maven.pkg.github.com/ballerina-platform/*'
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
+
+        maven {
+            url = 'https://maven.wso2.org/nexus/content/repositories/releases/'
+        }
+
+        maven {
+            url = 'https://maven.wso2.org/nexus/content/groups/wso2-public/'
+        }
+
+        maven {
+            url = 'https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1614'
+        }
+
+        maven {
+            url = 'https://repo.maven.apache.org/maven2'
+        }
+
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    ext {
+        snapshotVersion= '-SNAPSHOT'
+        timestampedVersionRegex = '.*-\\d{8}-\\d{6}-\\w.*\$'
+    }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    configurations {
+        ballerinaStdLibs
+    }
+
+    dependencies {
+        /* Standard libraries */
+        ballerinaStdLibs "io.ballerina.stdlib:constraint-ballerina:${stdlibConstraintVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:io-ballerina:${stdlibIoVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:time-ballerina:${stdlibTimeVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:url-ballerina:${stdlibUrlVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:crypto-ballerina:${stdlibCryptoVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:log-ballerina:${stdlibLogVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:os-ballerina:${stdlibOsVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:task-ballerina:${stdlibTaskVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:cache-ballerina:${stdlibCacheVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:file-ballerina:${stdlibFileVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:mime-ballerina:${stdlibMimeVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:uuid-ballerina:${stdlibUuidVersion}"
+        ballerinaStdLibs "io.ballerina.lib:data.jsondata-ballerina:${stdlibDataJsonDataVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:auth-ballerina:${stdlibAuthVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:jwt-ballerina:${stdlibJwtVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:oauth2-ballerina:${stdlibOAuth2Version}"
+        ballerinaStdLibs "io.ballerina.stdlib:http-ballerina:${stdlibHttpVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:websocket-ballerina:${stdlibWebsocketVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:graphql-ballerina:${stdlibGraphqlVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:observe-ballerina:${observeVersion}"
+        ballerinaStdLibs "io.ballerina:observe-ballerina:${observeInternalVersion}"
+    }
+}
+
+def moduleVersion = project.version.replace("-SNAPSHOT", "")
+
+release {
+    // Disable check snapshots temporarily
+    failOnPublishNeeded = false
+    versionPropertyFile = 'gradle.properties'
+    tagTemplate = 'v${version}'
+    git {
+        // To release from any branch
+        requireBranch = "release-${moduleVersion}"
+        pushToRemote = 'origin'
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+task codeCoverageReport(type: JacocoReport) {
+    dependsOn = subprojects.test
+    dependsOn(":graphql-cli:jacocoTestReport")
+    dependsOn(":directoryBuild")
+
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/coverage-reports/*.exec")
+
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = true
+        xml.destination(new File("${buildDir}/reports/jacoco/report.xml"))
+        html.destination(new File("${buildDir}/reports/jacoco/report.html"))
+        csv.destination(new File("${buildDir}/reports/jacoco/report.csv"))
+    }
+
+    onlyIf = {
+        true
+    }
+}
+
+def artifactCacheParent = file("$project.projectDir/build/cache_parent/")
+def artifactLibParent = file("$project.projectDir/build/lib_parent/")
+def targetGraphqlCliJar = file("$project.rootDir/graphql-cli/build/libs/graphql-cli-${project.version}.jar")
+def targetGraphqlBalServiceJar = file("$project.rootDir/graphql-schema-file-generator/build/libs/" +
+        "graphql-schema-file-generator-${project.version}.jar")
+def targetGraphqlCodeGenJar = file("$project.rootDir/graphql-code-generator/build/libs/" +
+        "graphql-code-generator-${project.version}.jar")
+
+jar {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': project.version)
+    }
+}
+
+task directoryBuild {
+    doLast {
+        copy {
+            from targetGraphqlCliJar
+            into file("$artifactLibParent/libs")
+        }
+        copy {
+            from targetGraphqlBalServiceJar
+            into file("$artifactLibParent/libs")
+        }
+        copy {
+            from targetGraphqlCodeGenJar
+            into file("$artifactLibParent/libs")
+        }
+    }
+
+    outputs.dir artifactCacheParent
+    outputs.dir artifactLibParent
+    doNotTrackState("build needs to run every time")
+}
+
+task createArtifactZip(type: Zip) {
+    destinationDirectory = file("${buildDir}/distributions")
+    from directoryBuild
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact source: createArtifactZip, extension: 'zip'
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/ballerina-platform/graphql-tools")
+            credentials {
+                username = System.getenv("packageUser")
+                password = System.getenv("packagePAT")
+            }
+        }
+    }
+}
+
+directoryBuild.dependsOn ":${packageName}-schema-file-generator:build"
+directoryBuild.dependsOn ":${packageName}-code-generator:build"
+directoryBuild.dependsOn ":${packageName}-cli:build"
+directoryBuild.dependsOn ":generatePomFileForMavenJavaPublication"
+build.dependsOn directoryBuild
+
+publish.dependsOn build

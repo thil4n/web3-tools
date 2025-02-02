@@ -19,15 +19,26 @@
 package io.ballerina.web3.abi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.ballerina.web3.generator.utils.CodeGeneratorUtils;
+
 import java.io.File;
 
 
 public class AbiReader {
-    public static void main(String[] args) {
+
+    private String abiPath;
+
+
+    public AbiReader(String abiPath){
+        this.abiPath = abiPath;
+    }
+
+    public  void read() {
         try {
             // Load ABI JSON file
             ObjectMapper objectMapper = new ObjectMapper();
-            File file = new File("src/main/resources/SimpleStorage.json");
+            File file = new File(abiPath);
 
             // Deserialize JSON
             ContractJson contractJson = objectMapper.readValue(file,ContractJson.class);
@@ -36,22 +47,12 @@ public class AbiReader {
 
             // Print parsed ABI details
             for (AbiEntry entry : abiEntries) {
-                System.out.println("Function: " + entry.getName());
-                System.out.println("Type: " + entry.getType());
-                System.out.println("State Mutability: " + entry.getStateMutability());
 
-                if (entry.getInputs() != null) {
-                    for (AbiInput input : entry.getInputs()) {
-                        System.out.println("Input: " + input.getName() + " (" + input.getType() + ")");
-                    }
-                }
+                
 
-                if (entry.getOutputs() != null) {
-                    for (AbiOutput output : entry.getOutputs()) {
-                        System.out.println("Output: " + output.getType());
-                    }
-                }
+                String functionSelector = CodeGeneratorUtils.generateFunctionSelector(entry);
 
+                System.out.println("Function selector : " + functionSelector);
                 System.out.println("----------------------");
             }
 

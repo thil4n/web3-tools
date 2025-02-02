@@ -18,8 +18,14 @@
 
 package io.ballerina.web3;
 
+import io.ballerina.web3.abi.AbiReader;
+import static io.ballerina.compiler.syntax.tree.*;
+
+
 public class Main {
 public static void main(String[] args) {
-    System.out.println("Staring web3 ");
+    AbiReader  reader = new AbiReader("src/main/resources/SimpleStorage.json");
+
+    reader.read();
 }
 }
