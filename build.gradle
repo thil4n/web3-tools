@@ -23,12 +23,10 @@ plugins {
     id "net.researchgate.release"
 }
 
-def packageName = "graphql"
+def packageName = "web3tools"
 
 dependencies {
-    implementation project(':graphql-schema-file-generator')
-    implementation project(':graphql-code-generator')
-    implementation project(':graphql-cli')
+    implementation project(':app')
 }
 
 allprojects {
@@ -108,112 +106,112 @@ subprojects {
     }
 }
 
-def moduleVersion = project.version.replace("-SNAPSHOT", "")
+// def moduleVersion = project.version.replace("-SNAPSHOT", "")
 
-release {
-    // Disable check snapshots temporarily
-    failOnPublishNeeded = false
-    versionPropertyFile = 'gradle.properties'
-    tagTemplate = 'v${version}'
-    git {
-        // To release from any branch
-        requireBranch = "release-${moduleVersion}"
-        pushToRemote = 'origin'
-    }
-}
+// release {
+//     // Disable check snapshots temporarily
+//     failOnPublishNeeded = false
+//     versionPropertyFile = 'gradle.properties'
+//     tagTemplate = 'v${version}'
+//     git {
+//         // To release from any branch
+//         requireBranch = "release-${moduleVersion}"
+//         pushToRemote = 'origin'
+//     }
+// }
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
+// tasks.withType(JavaCompile) {
+//     options.encoding = 'UTF-8'
+// }
 
-task codeCoverageReport(type: JacocoReport) {
-    dependsOn = subprojects.test
-    dependsOn(":graphql-cli:jacocoTestReport")
-    dependsOn(":directoryBuild")
+// task codeCoverageReport(type: JacocoReport) {
+//     dependsOn = subprojects.test
+//     dependsOn(":graphql-cli:jacocoTestReport")
+//     dependsOn(":directoryBuild")
 
-    executionData fileTree(project.rootDir.absolutePath).include("**/build/coverage-reports/*.exec")
+//     executionData fileTree(project.rootDir.absolutePath).include("**/build/coverage-reports/*.exec")
 
-    subprojects.each {
-        sourceSets it.sourceSets.main
-    }
-    reports {
-        xml.required = true
-        html.required = true
-        csv.required = true
-        xml.destination(new File("${buildDir}/reports/jacoco/report.xml"))
-        html.destination(new File("${buildDir}/reports/jacoco/report.html"))
-        csv.destination(new File("${buildDir}/reports/jacoco/report.csv"))
-    }
+//     subprojects.each {
+//         sourceSets it.sourceSets.main
+//     }
+//     reports {
+//         xml.required = true
+//         html.required = true
+//         csv.required = true
+//         xml.destination(new File("${buildDir}/reports/jacoco/report.xml"))
+//         html.destination(new File("${buildDir}/reports/jacoco/report.html"))
+//         csv.destination(new File("${buildDir}/reports/jacoco/report.csv"))
+//     }
 
-    onlyIf = {
-        true
-    }
-}
+//     onlyIf = {
+//         true
+//     }
+// }
 
-def artifactCacheParent = file("$project.projectDir/build/cache_parent/")
-def artifactLibParent = file("$project.projectDir/build/lib_parent/")
-def targetGraphqlCliJar = file("$project.rootDir/graphql-cli/build/libs/graphql-cli-${project.version}.jar")
-def targetGraphqlBalServiceJar = file("$project.rootDir/graphql-schema-file-generator/build/libs/" +
-        "graphql-schema-file-generator-${project.version}.jar")
-def targetGraphqlCodeGenJar = file("$project.rootDir/graphql-code-generator/build/libs/" +
-        "graphql-code-generator-${project.version}.jar")
+// def artifactCacheParent = file("$project.projectDir/build/cache_parent/")
+// def artifactLibParent = file("$project.projectDir/build/lib_parent/")
+// def targetGraphqlCliJar = file("$project.rootDir/graphql-cli/build/libs/graphql-cli-${project.version}.jar")
+// def targetGraphqlBalServiceJar = file("$project.rootDir/graphql-schema-file-generator/build/libs/" +
+//         "graphql-schema-file-generator-${project.version}.jar")
+// def targetGraphqlCodeGenJar = file("$project.rootDir/graphql-code-generator/build/libs/" +
+//         "graphql-code-generator-${project.version}.jar")
 
-jar {
-    manifest {
-        attributes('Implementation-Title': project.name,
-                'Implementation-Version': project.version)
-    }
-}
+// jar {
+//     manifest {
+//         attributes('Implementation-Title': project.name,
+//                 'Implementation-Version': project.version)
+//     }
+// }
 
-task directoryBuild {
-    doLast {
-        copy {
-            from targetGraphqlCliJar
-            into file("$artifactLibParent/libs")
-        }
-        copy {
-            from targetGraphqlBalServiceJar
-            into file("$artifactLibParent/libs")
-        }
-        copy {
-            from targetGraphqlCodeGenJar
-            into file("$artifactLibParent/libs")
-        }
-    }
+// task directoryBuild {
+//     doLast {
+//         copy {
+//             from targetGraphqlCliJar
+//             into file("$artifactLibParent/libs")
+//         }
+//         copy {
+//             from targetGraphqlBalServiceJar
+//             into file("$artifactLibParent/libs")
+//         }
+//         copy {
+//             from targetGraphqlCodeGenJar
+//             into file("$artifactLibParent/libs")
+//         }
+//     }
 
-    outputs.dir artifactCacheParent
-    outputs.dir artifactLibParent
-    doNotTrackState("build needs to run every time")
-}
+//     outputs.dir artifactCacheParent
+//     outputs.dir artifactLibParent
+//     doNotTrackState("build needs to run every time")
+// }
 
-task createArtifactZip(type: Zip) {
-    destinationDirectory = file("${buildDir}/distributions")
-    from directoryBuild
-}
+// task createArtifactZip(type: Zip) {
+//     destinationDirectory = file("${buildDir}/distributions")
+//     from directoryBuild
+// }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact source: createArtifactZip, extension: 'zip'
-        }
-    }
+// publishing {
+//     publications {
+//         mavenJava(MavenPublication) {
+//             artifact source: createArtifactZip, extension: 'zip'
+//         }
+//     }
 
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/ballerina-platform/graphql-tools")
-            credentials {
-                username = System.getenv("packageUser")
-                password = System.getenv("packagePAT")
-            }
-        }
-    }
-}
+//     repositories {
+//         maven {
+//             name = "GitHubPackages"
+//             url = uri("https://maven.pkg.github.com/ballerina-platform/graphql-tools")
+//             credentials {
+//                 username = System.getenv("packageUser")
+//                 password = System.getenv("packagePAT")
+//             }
+//         }
+//     }
+// }
 
-directoryBuild.dependsOn ":${packageName}-schema-file-generator:build"
-directoryBuild.dependsOn ":${packageName}-code-generator:build"
-directoryBuild.dependsOn ":${packageName}-cli:build"
-directoryBuild.dependsOn ":generatePomFileForMavenJavaPublication"
-build.dependsOn directoryBuild
+// directoryBuild.dependsOn ":${packageName}-schema-file-generator:build"
+// directoryBuild.dependsOn ":${packageName}-code-generator:build"
+// directoryBuild.dependsOn ":${packageName}-cli:build"
+// directoryBuild.dependsOn ":generatePomFileForMavenJavaPublication"
+// build.dependsOn directoryBuild
 
-publish.dependsOn build
+// publish.dependsOn build
