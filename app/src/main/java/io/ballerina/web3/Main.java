@@ -10,6 +10,8 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+        
+        
         FunctionDefinitionNode functionNode = createFunctionDefinitionNode(
             FUNCTION_DEFINITION, // No metadata
             null, // No metadata
@@ -24,10 +26,9 @@ public class Main {
         NodeList<ModuleMemberDeclarationNode> members = createNodeList(functionNode);
         ModulePartNode modulePartNode = createModulePartNode(createEmptyNodeList(), members, createToken(EOF_TOKEN));
 
-        // Corrected: Convert ModulePartNode to a source text
         String sourceCode = modulePartNode.toSourceCode();
 
-        System.out.println(sourceCode);
+        System.out.print(sourceCode);
     }
 
 
