@@ -16,30 +16,18 @@
  * under the License.
  */
 
-package io.ballerina.web3.abi;
+package io.ballerina.web3.generator;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
+import io.ballerina.web3.abi.AbiEntry;
+import io.ballerina.web3.generator.utils.CodeGeneratorUtils;
 
-public class AbiReader {
-
-    private String abiPath;
-
-    public AbiReader(String abiPath){
-        this.abiPath = abiPath;
-    }
-
-    public  AbiEntry[] read() throws Exception {
-
-            // Load ABI JSON file
-            ObjectMapper objectMapper = new ObjectMapper();
-            File file = new File(abiPath);
-
-            // Deserialize JSON
-            ContractJson contractJson = objectMapper.readValue(file,ContractJson.class);
-
-            AbiEntry[] abiEntries = contractJson.getAbi();
-
-            return abiEntries;
+public class Generator {
+    public static void generate(AbiEntry[] abiEntries) {
+        // Print parsed ABI details
+        for (AbiEntry entry : abiEntries) {
+            String functionSelector = CodeGeneratorUtils.generateFunctionSelector(entry);
+            System.out.println("Function selector : " + functionSelector);
+            System.out.println("----------------------");
+        }
     }
 }
