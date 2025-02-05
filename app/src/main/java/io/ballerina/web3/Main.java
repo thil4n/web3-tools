@@ -1,79 +1,57 @@
 package io.ballerina.web3;
 
 import io.ballerina.compiler.syntax.tree.*;
-
-import static io.ballerina.compiler.syntax.tree.NodeFactory.*;
-import static io.ballerina.compiler.syntax.tree.SyntaxKind.*;
+import io.ballerina.tools.text.TextDocument;
+import io.ballerina.tools.text.TextDocuments;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ballerinalang.formatter.core.Formatter;
+import org.ballerinalang.formatter.core.FormatterException;
+
 public class Main {
-    public static void main(String[] args) {
-        
-        
-        FunctionDefinitionNode functionNode = createFunctionDefinitionNode(
-            FUNCTION_DEFINITION, // No metadata
-            null, // No metadata
-            createEmptyNodeList(), // No qualifier
-            createToken(FUNCTION_KEYWORD),  // "function" keyword
-            createIdentifierToken("getBalance"), // Function name
-            createEmptyNodeList(), // No qualifiers
-            generateRemoteFunctionSignature(), // Function parameters
-            generateRemoteFunctionBody() // Function body
+    public static void main(String[] args) throws FormatterException {
+
+        // Using NodeParser API to parse import declaration
+        ImportDeclarationNode importDecl = (ImportDeclarationNode) NodeParser.parseImportDeclaration(
+                "import ballerina/http;"
         );
 
-        NodeList<ModuleMemberDeclarationNode> members = createNodeList(functionNode);
-        ModulePartNode modulePartNode = createModulePartNode(createEmptyNodeList(), members, createToken(EOF_TOKEN));
+        // Using NodeParser API with templates to generate service declaration
+        ServiceDeclarationNode serviceDecl = (ServiceDeclarationNode) NodeParser.parseModuleMemberDeclaration(
+                String.format("service %s on %s { }", "/", "new http:Listener(9090)")
+        );
+        
+        // Using NodeParser API with templates to generate resource method
+        FunctionDefinitionNode resourceMethod = (FunctionDefinitionNode) NodeParser.parseObjectMember(
+                String.format("resource function %s %s() returns %s {}", "get", "foo", "json")
+        );
 
+        // Using NodeFactory API to modify service declaration with resource methods
+        List<Node> memberNodes = new ArrayList<>();
+        memberNodes.add(resourceMethod);
+        NodeList<Node> members = NodeFactory.createNodeList(memberNodes);
+        serviceDecl = serviceDecl.modify().withMembers(members).apply();
+
+        // Create a ModulePartNode including the import and service
+        List<ModuleMemberDeclarationNode> moduleMembers = new ArrayList<>();
+        moduleMembers.add(serviceDecl);
+        
+        ModulePartNode modulePartNode = NodeFactory.createModulePartNode(
+                NodeFactory.createNodeList(importDecl),
+                NodeFactory.createNodeList(moduleMembers), 
+                NodeFactory.createToken(SyntaxKind.EOF_TOKEN)
+        );
+
+        // Generate the source code
         String sourceCode = modulePartNode.toSourceCode();
 
-        System.out.print(sourceCode);
-    }
+        // Parse the source code
+        TextDocument textDocument = TextDocuments.from(sourceCode);
+        SyntaxTree syntaxTree = SyntaxTree.from(textDocument);
+        syntaxTree = Formatter.format(syntaxTree);
 
-
-
-    // Generate the function body
-    public static FunctionBodyNode generateRemoteFunctionBody() {
-        List<StatementNode> assignmentNodes = new ArrayList<>();
-        NodeList<StatementNode> statementList = createNodeList(assignmentNodes);
-
-        return createFunctionBodyBlockNode(
-            createToken(OPEN_BRACE_TOKEN),
-            null, statementList,
-            createToken(CLOSE_BRACE_TOKEN),
-            null
-        );
-    }
-
-
-    // Generate the function signature
-    public static FunctionSignatureNode generateRemoteFunctionSignature() {
-        RequiredParameterNode param1 = createRequiredParameterNode(
-            createEmptyNodeList(),
-            createBuiltinSimpleNameReferenceNode(null, createIdentifierToken("int")),
-            createIdentifierToken("amount")
-        );
-
-        RequiredParameterNode param2 = createRequiredParameterNode(
-            createEmptyNodeList(),
-            createBuiltinSimpleNameReferenceNode(null, createIdentifierToken("string")),
-            createIdentifierToken("name")
-        );
-
-        SeparatedNodeList<ParameterNode> parameterList = createSeparatedNodeList(
-            param1, createToken(SyntaxKind.COMMA_TOKEN), param2
-        );
-
-        BuiltinSimpleNameReferenceNode returnType = createBuiltinSimpleNameReferenceNode(null, createIdentifierToken("int"));
-
-        ReturnTypeDescriptorNode returnTypeDescriptorNode = createReturnTypeDescriptorNode(
-            createToken(RETURNS_KEYWORD), createEmptyNodeList(), returnType
-        );
-
-        return createFunctionSignatureNode(
-            createToken(OPEN_PAREN_TOKEN), parameterList,
-            createToken(CLOSE_PAREN_TOKEN), returnTypeDescriptorNode
-        );
+        System.out.println(syntaxTree.toSourceCode());
     }
 }
