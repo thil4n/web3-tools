@@ -21,6 +21,7 @@ package io.ballerina.web3.generator;
 import io.ballerina.compiler.syntax.tree.*;
 import io.ballerina.tools.text.TextDocument;
 import io.ballerina.tools.text.TextDocuments;
+import io.ballerina.web3.abi.AbiEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ import org.ballerinalang.formatter.core.Formatter;
 import org.ballerinalang.formatter.core.FormatterException;
 
 public class CodeGenerator {
-    public static void generate(String[] args) throws FormatterException {
+    public static void generate(AbiEntry[] abiEntries) throws FormatterException {
 
         // Using NodeParser API to parse import declaration
         ImportDeclarationNode importDecl = (ImportDeclarationNode) NodeParser.parseImportDeclaration(
