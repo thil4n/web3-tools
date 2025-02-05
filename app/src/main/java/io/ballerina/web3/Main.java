@@ -1,8 +1,6 @@
 package io.ballerina.web3;
 
 import io.ballerina.compiler.syntax.tree.*;
-import io.ballerina.tools.text.TextDocument;
-import io.ballerina.tools.text.TextDocuments;
 
 import static io.ballerina.compiler.syntax.tree.NodeFactory.*;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.*;
@@ -32,6 +30,9 @@ public class Main {
         System.out.println(sourceCode);
     }
 
+
+
+    // Generate the function body
     public static FunctionBodyNode generateRemoteFunctionBody() {
         List<StatementNode> assignmentNodes = new ArrayList<>();
         NodeList<StatementNode> statementList = createNodeList(assignmentNodes);
@@ -44,6 +45,8 @@ public class Main {
         );
     }
 
+
+    // Generate the function signature
     public static FunctionSignatureNode generateRemoteFunctionSignature() {
         RequiredParameterNode param1 = createRequiredParameterNode(
             createEmptyNodeList(),
