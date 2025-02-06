@@ -20,9 +20,12 @@ package io.ballerina.web3.generator;
 
 import org.ballerinalang.formatter.core.FormatterException;
 import io.ballerina.web3.abi.AbiEntry;
+import io.ballerina.web3.generator.utils.FileUtils;
 
 public class Generator {
     public static void generate(AbiEntry[] abiEntries) throws FormatterException {
         String sourceCode = ClientGenerator.generate(abiEntries);
+
+        FileUtils.writeToFile("src/main.bal", sourceCode);
     }
 }

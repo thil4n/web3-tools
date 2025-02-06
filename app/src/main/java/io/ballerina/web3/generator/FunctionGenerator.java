@@ -130,6 +130,7 @@ public class FunctionGenerator {
                 return data.toString();
         }
 
+
         private static FunctionDefinitionNode generateResourceFunction(AbiEntry abiEntry) {
                 List<AbiInput> inputs = abiEntry.getInputs();
                 List<AbiOutput> outputs = abiEntry.getOutputs();
@@ -151,10 +152,34 @@ public class FunctionGenerator {
                                                 """, functionSignature, functionBody));
         }
 
+        private static FunctionDefinitionNode generateInitFunction() {
+                StringBuilder data = new StringBuilder();
+
+                data.append("//Encode function parameters\n");
+                data.append("public function init(string api) returns error? {\n");
+                data.append("self.api = api;\n\n");
+
+                data.append("// Create a client configuration to disable HTTP/2 upgrades\n");
+                data.append("http:ClientConfiguration clientConfig = {\n");
+                data.append("httpVersion: http:HTTP_1_1\n");
+                data.append("};\n");
+
+                data.append("// Initialize the HTTP client with the given API URL and configuration\n");
+                data.append("self.rpcClient = check new (self.api, clientConfig)\n");
+
+                data.append("}\n");
+
+                return  (FunctionDefinitionNode) NodeParser.parseObjectMember(data.toString());
+        }
+
         public static NodeList<Node> generate(AbiEntry[] abiEntries) throws FormatterException {
 
                 List<Node> memberNodes = new ArrayList<>();
 
+                // Add the init function
+                memberNodes.add(generateInitFunction());
+
+                // Generate resource functions for each ABI entry
                 for (AbiEntry abiEntry : abiEntries) {
                         FunctionDefinitionNode resourceMethod = generateResourceFunction(abiEntry);
                         memberNodes.add(resourceMethod);
@@ -162,7 +187,6 @@ public class FunctionGenerator {
                 }
 
                 NodeList<Node> members = NodeFactory.createNodeList(memberNodes);
-
                 return members;
         }
 }

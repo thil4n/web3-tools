@@ -36,9 +36,21 @@ public class ClientGenerator {
                 ImportDeclarationNode importDecl = (ImportDeclarationNode) NodeParser.parseImportDeclaration(
                                 "import ballerina/http;");
 
-                // Using NodeParser API with templates to generate service declaration
+                                StringBuilder data = new StringBuilder();
+
+                                data.append("public client class Web3{\n");
+
+                                data.append("// The base URL of the Ethereum JSON-RPC API.\n");
+                                data.append("private final string api;\n");
+
+                                data.append("// HTTP client to send JSON-RPC requests to the Ethereum node.\n");
+                                data.append("private final http:Client rpcClient;\n");
+
+                                data.append("}\n");
+
+                // Using NodeParser API with templates to generate client declaration
                 ServiceDeclarationNode serviceDecl = (ServiceDeclarationNode) NodeParser.parseModuleMemberDeclaration(
-                                String.format("service %s on %s { }", "/", "new http:Listener(9090)"));
+                                data.toString());
 
                 // Using NodeFactory API to modify service declaration with resource methods
                 NodeList<Node> members = FunctionGenerator.generate(abiEntries);
