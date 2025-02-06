@@ -48,11 +48,9 @@ public class ClientGenerator {
                 data.append("private final http:Client rpcClient;\n");
 
 
-                // Node apiProperty =   NodeParser.parseObjectMember("private final string api;\n");
-                Node clientProperty =   NodeParser.parseObjectMember(data.toString());
+                Node clientProperties =   NodeParser.parseObjectMember(data.toString());
 
-                // members.add(apiProperty);
-                members.add(clientProperty);
+                members.add(clientProperties);
 
                 members.addAll(FunctionGenerator.generate(abiEntries));
 

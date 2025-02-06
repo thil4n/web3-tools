@@ -7,7 +7,7 @@ public client class Web3 {
     // HTTP client to send JSON-RPC requests to the Ethereum node.
     private final http:Client rpcClient;
 
-    //Encode function parameters
+    //Initialize the client
     public function init(string api) returns error? {
         self.api = api;
 
@@ -22,8 +22,8 @@ public client class Web3 {
 
     resource isolated function post store(int _value) returns error {
         // Encode function parameters
-        string encodedParameters = self.encodeParameters(parameters);
-        string callData = "0x" + functionSelector + encodedParameters;
+        string encodedParameters = encodeParameters(parameters);
+        string callData = "0x6057361d" + encodedParameters;
 
         // Generate the JSON-RPC request body
         json requestBody = {
@@ -48,8 +48,8 @@ public client class Web3 {
 
     resource isolated function post retrieve() returns int|error {
         // Encode function parameters
-        string encodedParameters = self.encodeParameters(parameters);
-        string callData = "0x" + functionSelector + encodedParameters;
+        string encodedParameters = encodeParameters(parameters);
+        string callData = "0x2e64cec1" + encodedParameters;
 
         // Generate the JSON-RPC request body
         json requestBody = {

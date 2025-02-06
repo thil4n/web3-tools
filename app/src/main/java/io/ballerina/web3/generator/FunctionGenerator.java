@@ -103,8 +103,8 @@ public class FunctionGenerator {
                 StringBuilder data = new StringBuilder();
 
                 data.append("    // Encode function parameters\n");
-                data.append("    string encodedParameters = self.encodeParameters(parameters);\n");
-                data.append("    string callData = \"0x\" + functionSelector + encodedParameters;\n\n");
+                data.append("    string encodedParameters = encodeParameters(parameters);\n");
+                data.append(String.format("    string callData = \"0x%s\" + encodedParameters;\n\n", functionSelector));
 
                 data.append("    // Generate the JSON-RPC request body\n");
                 data.append("    json requestBody = {\n");
