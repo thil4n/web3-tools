@@ -152,7 +152,7 @@ public class FunctionGenerator {
         private static FunctionDefinitionNode generateInitFunction() {
                 StringBuilder data = new StringBuilder();
 
-                data.append("//Encode function parameters\n");
+                data.append("//Initialize the client\n");
                 data.append("public function init(string api) returns error? {\n");
                 data.append("self.api = api;\n\n");
 
@@ -161,15 +161,15 @@ public class FunctionGenerator {
                 data.append("httpVersion: http:HTTP_1_1\n");
                 data.append("};\n");
 
-                data.append("// Initialize the HTTP client with the given API URL and configuration\n");
-                data.append("self.rpcClient = check new (self.api, clientConfig)\n");
+                data.append("\n// Initialize the HTTP client with the given API URL and configuration\n");
+                data.append("self.rpcClient = check new (self.api, clientConfig);\n");
 
                 data.append("}\n");
 
                 return  (FunctionDefinitionNode) NodeParser.parseObjectMember(data.toString());
         }
 
-        public static NodeList<Node> generate(AbiEntry[] abiEntries) throws FormatterException {
+        public static List<Node> generate(AbiEntry[] abiEntries) throws FormatterException {
 
                 List<Node> memberNodes = new ArrayList<>();
 
@@ -182,7 +182,6 @@ public class FunctionGenerator {
                         memberNodes.add(resourceMethod);
                 }
 
-                NodeList<Node> members = NodeFactory.createNodeList(memberNodes);
-                return members;
+                return memberNodes;
         }
 }

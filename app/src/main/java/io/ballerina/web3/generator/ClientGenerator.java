@@ -32,34 +32,41 @@ public class ClientGenerator {
 
         public static String generate(AbiEntry[] abiEntries) throws FormatterException {
 
-                // Using NodeParser API to parse import declaration
-                ImportDeclarationNode importDecl = (ImportDeclarationNode) NodeParser.parseImportDeclaration(
-                                "import ballerina/http;");
-
-                                StringBuilder data = new StringBuilder();
-
-                                data.append("public client class Web3{\n");
-
-                                data.append("// The base URL of the Ethereum JSON-RPC API.\n");
-                                data.append("private final string api;\n");
-
-                                data.append("// HTTP client to send JSON-RPC requests to the Ethereum node.\n");
-                                data.append("private final http:Client rpcClient;\n");
-
-                                data.append("}\n");
-
                 // Using NodeParser API with templates to generate client declaration
-                ServiceDeclarationNode serviceDecl = (ServiceDeclarationNode) NodeParser.parseModuleMemberDeclaration(
-                                data.toString());
+                ClassDefinitionNode serviceDecl = (ClassDefinitionNode) NodeParser.parseModuleMemberDeclaration(
+                                "public client class Web3 {}");
 
                 // Using NodeFactory API to modify service declaration with resource methods
-                NodeList<Node> members = FunctionGenerator.generate(abiEntries);
+                List<Node> members = new ArrayList<>();
 
-                serviceDecl = serviceDecl.modify().withMembers(members).apply();
+                StringBuilder data = new StringBuilder();
+
+                data.append("\n// The base URL of the Ethereum JSON-RPC API.\n");
+                data.append("private final string api;\n");
+
+                data.append("\n// HTTP client to send JSON-RPC requests to the Ethereum node.\n");
+                data.append("private final http:Client rpcClient;\n");
+
+
+                // Node apiProperty =   NodeParser.parseObjectMember("private final string api;\n");
+                Node clientProperty =   NodeParser.parseObjectMember(data.toString());
+
+                // members.add(apiProperty);
+                members.add(clientProperty);
+
+                members.addAll(FunctionGenerator.generate(abiEntries));
+
+                NodeList<Node> memberNodeList = NodeFactory.createNodeList(members);
+
+                serviceDecl = serviceDecl.modify().withMembers(memberNodeList).apply();
 
                 // Create a ModulePartNode including the import and service
                 List<ModuleMemberDeclarationNode> moduleMembers = new ArrayList<>();
                 moduleMembers.add(serviceDecl);
+
+                // Using NodeParser API to parse import declaration
+                ImportDeclarationNode importDecl = (ImportDeclarationNode) NodeParser.parseImportDeclaration(
+                                "import ballerina/http;");
 
                 ModulePartNode modulePartNode = NodeFactory.createModulePartNode(
                                 NodeFactory.createNodeList(importDecl),
