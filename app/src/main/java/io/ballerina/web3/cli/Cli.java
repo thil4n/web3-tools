@@ -39,25 +39,24 @@ public class Cli implements Runnable {
 
     @Override
     public void run() {
-        // ✅ Validate ABI file before processing
+        // Validate ABI file before processing
         if (!isFileValid(abiPath)) {
             System.err.println("Error: ABI file does not exist or is not a valid file: " + abiPath);
             return;
         }
 
-        System.out.println("📂 ABI File: " + abiPath);
-        System.out.println("📂 Output Directory: " + outputDir);
+        System.out.println("ABI File: " + abiPath);
+        System.out.println("Output Directory: " + outputDir);
 
         try {
             generateBallerinaConnector();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
     private void generateBallerinaConnector() throws Exception {
-        System.out.println("🚀 Generating Ballerina connector...");
+        System.out.println("Generating Ballerina connector...");
 
         AbiReader abiReader = new AbiReader(abiPath);
 
