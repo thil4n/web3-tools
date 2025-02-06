@@ -95,9 +95,7 @@ public class FunctionGenerator {
                 data.append(") returns ");
 
                 String returnType = generateBallerinaReturnType(outputs, methodName);
-
                 data.append(returnType);
-
                 return data.toString();
         }
 
@@ -129,7 +127,6 @@ public class FunctionGenerator {
 
                 return data.toString();
         }
-
 
         private static FunctionDefinitionNode generateResourceFunction(AbiEntry abiEntry) {
                 List<AbiInput> inputs = abiEntry.getInputs();
@@ -183,7 +180,6 @@ public class FunctionGenerator {
                 for (AbiEntry abiEntry : abiEntries) {
                         FunctionDefinitionNode resourceMethod = generateResourceFunction(abiEntry);
                         memberNodes.add(resourceMethod);
-
                 }
 
                 NodeList<Node> members = NodeFactory.createNodeList(memberNodes);
