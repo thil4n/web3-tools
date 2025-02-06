@@ -22,7 +22,8 @@ import io.ballerina.compiler.syntax.tree.*;
 import io.ballerina.web3.abi.AbiEntry;
 import io.ballerina.web3.abi.AbiInput;
 import io.ballerina.web3.abi.AbiOutput;
-import io.ballerina.web3.generator.utils.BallerinaSanitizer;
+import io.ballerina.web3.generator.utils.AbiUtils;
+import io.ballerina.web3.generator.utils.BallerinaUtils;
 import io.ballerina.web3.generator.utils.CodeGeneratorUtils;
 
 import java.util.ArrayList;
@@ -99,46 +100,51 @@ public class FunctionGenerator {
                 return data.toString();
         }
 
-        private static String generateResourceFunctionBody(String functionSelector) {
-                StringBuilder data = new StringBuilder();
+        private static String generateResourceFunctionBody(List<AbiInput> inputs, String functionSelector) {
 
-                data.append("    // Encode function parameters\n");
-                data.append("    string encodedParameters = encodeParameters(parameters);\n");
-                data.append(String.format("    string callData = \"0x%s\" + encodedParameters;\n\n", functionSelector));
+                StringBuilder callData = new StringBuilder();
 
-                data.append("    // Generate the JSON-RPC request body\n");
-                data.append("    json requestBody = {\n");
-                data.append("        \"jsonrpc\": \"2.0\",\n");
-                data.append("        \"method\": \"eth_call\",\n");
-                data.append("        \"params\": [\n");
-                data.append("            {\"to\": self.address, \"data\": callData},\n");
-                data.append("            \"latest\"\n");
-                data.append("        ],\n");
-                data.append("        \"id\": 1\n");
-                data.append("    };\n\n");
+                callData.append("0x");
+                callData.append(functionSelector);
+                
+                String encodedParameters = AbiUtils.encodeParameters(inputs);
+                
+                callData.append(encodedParameters);
 
-                data.append("    // Send the request and get response\n");
-                data.append("    json response = check self.httpClient->post(self.nodeUrl, requestBody);\n");
-                data.append("    if response is json {\n");
-                data.append("        return response;\n");
-                data.append("    } else {\n");
-                data.append("        return error(\"Blockchain call failed\");\n");
-                data.append("    }\n");
-
-                return data.toString();
-        }
+                return """            
+                        // Generate the JSON-RPC request body
+                        json requestBody = {
+                            "jsonrpc": "2.0",
+                            "method": "eth_call",
+                            "params": [
+                                {"to": self.address, "data": %s},
+                                "latest"
+                            ],
+                            "id": 1
+                        };
+            
+                        // Send the request and get response
+                        json response = check self.httpClient->post(self.nodeUrl, requestBody);
+                        if response is json {
+                            return response;
+                        } else {
+                            return error("Blockchain call failed");
+                        }
+                        """.formatted(callData.toString());
+            }
+            
 
         private static FunctionDefinitionNode generateResourceFunction(AbiEntry abiEntry) {
                 List<AbiInput> inputs = abiEntry.getInputs();
                 List<AbiOutput> outputs = abiEntry.getOutputs();
 
-                String methodName = BallerinaSanitizer.sanitizeMethodName(abiEntry.getName());
+                String methodName = BallerinaUtils.sanitizeMethodName(abiEntry.getName());
 
                 String functionSelector = CodeGeneratorUtils.generateFunctionSelector(abiEntry);
 
                 // Generate function signature and body
                 String functionSignature = generateResourceFunctionSignature(inputs, outputs, methodName);
-                String functionBody = generateResourceFunctionBody(functionSelector);
+                String functionBody = generateResourceFunctionBody(inputs, functionSelector);
 
                 // Ensure correct Ballerina syntax
                 return (FunctionDefinitionNode) NodeParser.parseObjectMember(
