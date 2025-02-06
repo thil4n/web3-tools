@@ -23,6 +23,6 @@ import io.ballerina.web3.abi.AbiEntry;
 
 public class Generator {
     public static void generate(AbiEntry[] abiEntries) throws FormatterException {
-        CodeGenerator.generate(abiEntries);
+        String sourceCode = ClientGenerator.generate(abiEntries);
     }
 }
