@@ -18,13 +18,8 @@
 
 package io.ballerina.web3.generator;
 
-import java.util.List;
-
 import org.ballerinalang.formatter.core.FormatterException;
-
 import io.ballerina.web3.abi.AbiEntry;
-import io.ballerina.web3.abi.AbiInput;
-import io.ballerina.web3.generator.utils.CodeGeneratorUtils;
 
 public class Generator {
     public static void generate(AbiEntry[] abiEntries) throws FormatterException {
