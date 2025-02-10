@@ -5,7 +5,7 @@ public client class Web3 {
     private final string api;
 
     // The contract address.
-    private string address;
+    private  string address;
 
     // The address of the sender.
     private string|() sender = ();
@@ -114,7 +114,7 @@ public client class Web3 {
         return weiAmount;
     }
 
-    resource isolated function post store(decimal _value) returns error? {
+    resource isolated function post store(int _value) returns error {
         // Encode function parameters
         string encodedParameters = encodeParameters([_value]);
         string callData = "0x" + "6057361d" + encodedParameters;
@@ -135,7 +135,7 @@ public client class Web3 {
 
     }
 
-    resource isolated function post retrieve() returns decimal|error? {
+    resource isolated function post retrieve() returns int|error {
         // Encode function parameters
         string encodedParameters = encodeParameters([]);
         string callData = "0x" + "2e64cec1" + encodedParameters;
@@ -154,7 +154,7 @@ public client class Web3 {
         // Send the request and get response
         record {string result;} response = check self.rpcClient->post("/", requestBody);
 
-        decimal|error result = check hexToDecimal(response.result.substring(2));
-        return result;
+        int|error result = check hexToDecimal(response.result.substring(2));
+        return result
     }
 }
