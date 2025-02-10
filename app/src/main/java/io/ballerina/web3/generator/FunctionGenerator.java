@@ -159,8 +159,10 @@ public class FunctionGenerator {
                 StringBuilder data = new StringBuilder();
 
                 data.append("//Initialize the client\n");
-                data.append("public function init(string api) returns error? {\n");
+                data.append("public function init(string api, string address) returns error? {\n");
+
                 data.append("self.api = api;\n\n");
+                data.append("self.address = address;\n\n");
 
                 data.append("// Create a client configuration to disable HTTP/2 upgrades\n");
                 data.append("http:ClientConfiguration clientConfig = {\n");
