@@ -100,37 +100,52 @@ public class FunctionGenerator {
                 return data.toString();
         }
 
+       
+       
+        private static String generateParameterList(List<AbiInput> inputs) {
+                StringBuilder data = new StringBuilder();
+
+                for (int i = 0; i < inputs.size(); i++) {
+                        AbiInput input = inputs.get(i);
+                        data.append("\"").append(input.getName()).append("\": ").append(input.getName());
+
+                        if (i < inputs.size() - 1) {
+                                data.append(", "); // Add comma separator
+                        }
+                }
+
+                return data.toString();
+        }
+
+
         private static String generateResourceFunctionBody(List<AbiInput> inputs, String functionSelector) {
 
-                StringBuilder callData = new StringBuilder();
-
-                callData.append("0x");
-                callData.append(functionSelector);
+                String parameterList = generateParameterList(inputs);
                 
-                String encodedParameters = AbiUtils.encodeParameters(inputs);
-                
-                callData.append(encodedParameters);
-
-                return """            
+                return """
+                        // Encode function parameters
+                        string encodedParameters = encodeParameters([%s]);
+                        string callData =  "0x" + "%s" + encodedParameters;        
+                        
                         // Generate the JSON-RPC request body
                         json requestBody = {
                             "jsonrpc": "2.0",
                             "method": "eth_call",
                             "params": [
-                                {"to": self.address, "data": %s},
+                                {"to": self.address, "data": callData},
                                 "latest"
                             ],
                             "id": 1
                         };
             
                         // Send the request and get response
-                        json response = check self.httpClient->post(self.nodeUrl, requestBody);
+                        json response = check self.httpClient->post("/", requestBody);
                         if response is json {
                             return response;
                         } else {
                             return error("Blockchain call failed");
                         }
-                        """.formatted(callData.toString());
+                        """.formatted(parameterList, functionSelector);
             }
             
 
