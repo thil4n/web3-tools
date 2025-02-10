@@ -26,7 +26,7 @@ public class Generator {
     public static void generate(AbiEntry[] abiEntries) throws FormatterException {
         String sourceCode = ClientGenerator.generate(abiEntries);
 
-        FileUtils.writeToFile("src/main.bal", sourceCode);
-        FileUtils.copyResourceToOutput("utils.bal", "src");
+        FileUtils.writeToFile("src/output/main.bal", sourceCode);
+        FileUtils.copyResourceToOutput("utils.bal", "src/output");
     }
 }

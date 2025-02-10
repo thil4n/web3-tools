@@ -24,6 +24,6 @@ import picocli.CommandLine;
 public class Main {
     public static void main(String[] args) {
         int exitCode = new CommandLine(new Cli()).execute(args);
-        System.exit(0);
+        System.exit(exitCode);
     }
 }

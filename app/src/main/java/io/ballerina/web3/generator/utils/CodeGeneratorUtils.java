@@ -25,8 +25,6 @@ import io.ballerina.web3.abi.AbiEntry;
 import io.ballerina.web3.abi.AbiInput;
 
 public class CodeGeneratorUtils {
-
-
     public static String hashKeccak256(String str) {
         Keccak.Digest256 digest = new Keccak.Digest256();
         byte[] hash = digest.digest(str.getBytes(StandardCharsets.UTF_8));

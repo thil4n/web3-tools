@@ -63,7 +63,6 @@ public class Cli implements Runnable {
         AbiEntry[] abiEntries = abiReader.read();
 
         Generator.generate(abiEntries);
-
     }
 
     private boolean isFileValid(String filePath) {
