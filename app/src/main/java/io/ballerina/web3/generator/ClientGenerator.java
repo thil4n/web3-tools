@@ -58,7 +58,8 @@ public class ClientGenerator {
 
                 members.add(clientProperties);
 
-                members.addAll(FunctionGenerator.generate(abiEntries));
+                members.addAll(StaticFunctionGenerator.generate());
+                members.addAll(DynamicFunctionGenerator.generate(abiEntries));
 
                 NodeList<Node> memberNodeList = NodeFactory.createNodeList(members);
 

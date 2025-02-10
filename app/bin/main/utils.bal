@@ -84,13 +84,3 @@ public function hexToDecimal(string str) returns decimal|error {
 
     return decimalValue;
 }
-
-public function weiToEther(decimal weiAmount) returns decimal {
-    decimal etherValue = weiAmount / 1e18;
-    return etherValue;
-}
-
-public function ethToWei(decimal etherValue) returns decimal {
-    decimal weiAmount = etherValue * 1e18;
-    return weiAmount;
-}

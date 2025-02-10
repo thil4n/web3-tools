@@ -27,5 +27,6 @@ public class Generator {
         String sourceCode = ClientGenerator.generate(abiEntries);
 
         FileUtils.writeToFile("src/main.bal", sourceCode);
+        FileUtils.copyResourceToOutput("utils.bal", "src");
     }
 }

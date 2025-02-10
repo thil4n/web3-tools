@@ -22,7 +22,6 @@ import io.ballerina.compiler.syntax.tree.*;
 import io.ballerina.web3.abi.AbiEntry;
 import io.ballerina.web3.abi.AbiInput;
 import io.ballerina.web3.abi.AbiOutput;
-import io.ballerina.web3.generator.utils.AbiUtils;
 import io.ballerina.web3.generator.utils.BallerinaUtils;
 import io.ballerina.web3.generator.utils.CodeGeneratorUtils;
 
@@ -31,7 +30,7 @@ import java.util.List;
 
 import org.ballerinalang.formatter.core.FormatterException;
 
-public class FunctionGenerator {
+public class DynamicFunctionGenerator {
 
         private static String convertAbiTypeToBallerina(String abiType) {
                 if (abiType.endsWith("[]")) {
@@ -100,8 +99,6 @@ public class FunctionGenerator {
                 return data.toString();
         }
 
-       
-       
         private static String generateParameterList(List<AbiInput> inputs) {
                 StringBuilder data = new StringBuilder();
 
@@ -116,7 +113,6 @@ public class FunctionGenerator {
 
                 return data.toString();
         }
-
 
         private static String generateResourceFunctionBody(List<AbiInput> inputs, String functionSelector) {
 
@@ -139,15 +135,14 @@ public class FunctionGenerator {
                         };
             
                         // Send the request and get response
-                        json response = check self.httpClient->post("/", requestBody);
+                        json response = check self.rpcClient->post("/", requestBody);
                         if response is json {
                             return response;
                         } else {
                             return error("Blockchain call failed");
                         }
                         """.formatted(parameterList, functionSelector);
-            }
-            
+        }
 
         private static FunctionDefinitionNode generateResourceFunction(AbiEntry abiEntry) {
                 List<AbiInput> inputs = abiEntry.getInputs();
@@ -170,34 +165,9 @@ public class FunctionGenerator {
                                                 """, functionSignature, functionBody));
         }
 
-        private static FunctionDefinitionNode generateInitFunction() {
-                StringBuilder data = new StringBuilder();
-
-                data.append("//Initialize the client\n");
-                data.append("public function init(string api, string address) returns error? {\n");
-
-                data.append("self.api = api;\n\n");
-                data.append("self.address = address;\n\n");
-
-                data.append("// Create a client configuration to disable HTTP/2 upgrades\n");
-                data.append("http:ClientConfiguration clientConfig = {\n");
-                data.append("httpVersion: http:HTTP_1_1\n");
-                data.append("};\n");
-
-                data.append("\n// Initialize the HTTP client with the given API URL and configuration\n");
-                data.append("self.rpcClient = check new (self.api, clientConfig);\n");
-
-                data.append("}\n");
-
-                return  (FunctionDefinitionNode) NodeParser.parseObjectMember(data.toString());
-        }
-
         public static List<Node> generate(AbiEntry[] abiEntries) throws FormatterException {
 
                 List<Node> memberNodes = new ArrayList<>();
-
-                // Add the init function
-                memberNodes.add(generateInitFunction());
 
                 // Generate resource functions for each ABI entry
                 for (AbiEntry abiEntry : abiEntries) {

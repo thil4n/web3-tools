@@ -18,9 +18,13 @@
 
 package io.ballerina.web3.generator.utils;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 public class FileUtils {
@@ -41,6 +45,30 @@ public class FileUtils {
             System.out.println("Successfully wrote to file: " + path);
         } catch (IOException e) {
             System.err.println("Error writing to file: " + e.getMessage());
+        }
+    }
+
+        public static void copyResourceToOutput(String resourcePath, String outputDir) {
+        try (InputStream inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                System.err.println("Resource not found: " + resourcePath);
+                return;
+            }
+
+            Path outputPath = Paths.get(outputDir, resourcePath);
+            Files.createDirectories(outputPath.getParent());
+
+            try (OutputStream outputStream = new FileOutputStream(outputPath.toFile())) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+
+            System.out.println("Copied resource: " + resourcePath + " → " + outputPath);
+        } catch (IOException e) {
+            System.err.println("Error copying resource: " + e.getMessage());
         }
     }
 }
