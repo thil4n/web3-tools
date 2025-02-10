@@ -107,7 +107,7 @@ public class FunctionGenerator {
 
                 for (int i = 0; i < inputs.size(); i++) {
                         AbiInput input = inputs.get(i);
-                        data.append("\"").append(input.getName()).append("\": ").append(input.getName());
+                        data.append(input.getName());
 
                         if (i < inputs.size() - 1) {
                                 data.append(", "); // Add comma separator

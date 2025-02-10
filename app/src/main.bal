@@ -30,7 +30,7 @@ public client class Web3 {
 
     resource isolated function post store(int _value) returns error {
         // Encode function parameters
-        string encodedParameters = encodeParameters(["_value" :_value]);
+        string encodedParameters = encodeParameters([_value]);
         string callData = "0x" + "6057361d" + encodedParameters;
 
         // Generate the JSON-RPC request body
