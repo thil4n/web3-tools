@@ -38,7 +38,7 @@ public class DynamicFunctionGenerator {
                 }
 
                 return switch (abiType) {
-                        case "uint256", "int256", "uint8", "int8", "uint16", "int16" -> "int";
+                        case "uint256", "int256", "uint8", "int8", "uint16", "int16" -> "decimal";
                         case "bool" -> "boolean";
                         case "address" -> "string";
                         case "string", "bytes" -> "string";
@@ -48,12 +48,12 @@ public class DynamicFunctionGenerator {
 
         private static String generateBallerinaReturnType(List<AbiOutput> outputs, String functionName) {
                 if (outputs.isEmpty()) {
-                        return "error"; // Default to error if no return type
+                        return "error?"; // Default to error if no return type
                 }
 
                 // If there's only one output, return its native type
                 if (outputs.size() == 1) {
-                        return convertAbiTypeToBallerina(outputs.get(0).getType()) + "|error";
+                        return convertAbiTypeToBallerina(outputs.get(0).getType()) + "|error?";
                 }
 
                 // If multiple outputs, generate a record type
@@ -99,6 +99,24 @@ public class DynamicFunctionGenerator {
                 return data.toString();
         }
 
+        private static String generateDecodingLogic(List<AbiOutput> outputs) {
+                String outputType = outputs.get(0).getType(); // Assuming single output for simplicity
+
+                switch (outputType) {
+                        case "uint256":
+                        case "int256":
+                                return "decimal|error result = check hexToDecimal(response.result.substring(2));\n";
+                        case "bool":
+                                return "boolean result = response.result.equals(\"0x1\");\n";
+                        case "address":
+                                return "string result = \"0x\" + response.result.substring(26);\n"; // Last 20 bytes
+                        case "string":
+                                return "string result = hexToString(response.result.substring(2));\n";
+                        default:
+                                return "// Unsupported type: " + outputType + "\n";
+                }
+        }
+
         private static String generateParameterList(List<AbiInput> inputs) {
                 StringBuilder data = new StringBuilder();
 
@@ -114,33 +132,40 @@ public class DynamicFunctionGenerator {
                 return data.toString();
         }
 
-        private static String generateResourceFunctionBody(List<AbiInput> inputs, List<AbiOutput> outputs, String functionSelector) {
+        private static String generateResourceFunctionBody(List<AbiInput> inputs, List<AbiOutput> outputs,
+                        String functionSelector) {
 
                 String parameterList = generateParameterList(inputs);
-                String returnType = generateBallerinaReturnType(outputs, functionSelector);
-                
-                return """
-                        // Encode function parameters
-                        string encodedParameters = encodeParameters([%s]);
-                        string callData =  "0x" + "%s" + encodedParameters;        
-                        
-                        // Generate the JSON-RPC request body
-                        json requestBody = {
-                            "jsonrpc": "2.0",
-                            "method": "eth_call",
-                            "params": [
-                                {"to": self.address, "data": callData},
-                                "latest"
-                            ],
-                            "id": 1
-                        };
-            
-                        // Send the request and get response
-                        record {string result;} response = check self.rpcClient->post("/", requestBody);
-                        
-                        %s result = decodeResult(response.result);
 
-                        """.formatted(parameterList, functionSelector, returnType);
+                String result = """
+                                // Encode function parameters
+                                string encodedParameters = encodeParameters([%s]);
+                                string callData =  "0x" + "%s" + encodedParameters;
+
+                                // Generate the JSON-RPC request body
+                                json requestBody = {
+                                    "jsonrpc": "2.0",
+                                    "method": "eth_call",
+                                    "params": [
+                                        {"to": self.address, "data": callData},
+                                        "latest"
+                                    ],
+                                    "id": 1
+                                };
+
+                                // Send the request and get response
+                                record {string result;} response = check self.rpcClient->post("/", requestBody);
+
+                                """.formatted(parameterList, functionSelector);
+
+                // Add decoding logic only if outputs are present
+                if (!outputs.isEmpty()) {
+                        String decodingLogic = generateDecodingLogic(outputs);
+                        result += decodingLogic;
+                        result += "return result;";
+                }
+
+                return result;
         }
 
         private static FunctionDefinitionNode generateResourceFunction(AbiEntry abiEntry) {

@@ -46,7 +46,7 @@ public isolated function stringToHex(string value) returns string {
     return hexString;
 }
 
-function pow(decimal base, int exponent) returns decimal {
+isolated function pow(decimal base, int exponent) returns decimal {
     decimal value = 1;
     foreach int i in 1 ... exponent {
         value = value * base;
@@ -58,7 +58,7 @@ function pow(decimal base, int exponent) returns decimal {
 #
 # + str - parameter description
 # + return - return value description
-public function hexToDecimal(string str) returns decimal|error {
+public isolated function hexToDecimal(string str) returns decimal|error {
 
     // Initialize the result
     decimal decimalValue = 0;

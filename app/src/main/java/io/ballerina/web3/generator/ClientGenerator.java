@@ -45,7 +45,7 @@ public class ClientGenerator {
                 data.append("private final string api;\n");
 
                 data.append("\n// The contract address.\n");
-                data.append("private final string address;\n");
+                data.append("private string address;\n");
 
                 data.append("\n// The address of the sender.\n");
                 data.append("private string|() sender = ();\n");
