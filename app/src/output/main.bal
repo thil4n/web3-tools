@@ -131,12 +131,9 @@ public client class Web3 {
         };
 
         // Send the request and get response
-        json response = check self.rpcClient->post("/", requestBody);
-        if response is json {
-            return response;
-        } else {
-            return error("Blockchain call failed");
-        }
+        record {string result;} response = check self.rpcClient->post("/", requestBody);
+
+        error result = decodeResult(response.result);
 
     }
 
@@ -157,12 +154,9 @@ public client class Web3 {
         };
 
         // Send the request and get response
-        json response = check self.rpcClient->post("/", requestBody);
-        if response is json {
-            return response;
-        } else {
-            return error("Blockchain call failed");
-        }
+        record {string result;} response = check self.rpcClient->post("/", requestBody);
+
+        int|error result = decodeResult(response.result);
 
     }
 }

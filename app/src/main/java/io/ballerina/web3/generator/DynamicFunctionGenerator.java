@@ -114,9 +114,10 @@ public class DynamicFunctionGenerator {
                 return data.toString();
         }
 
-        private static String generateResourceFunctionBody(List<AbiInput> inputs, String functionSelector) {
+        private static String generateResourceFunctionBody(List<AbiInput> inputs, List<AbiOutput> outputs, String functionSelector) {
 
                 String parameterList = generateParameterList(inputs);
+                String returnType = generateBallerinaReturnType(outputs, functionSelector);
                 
                 return """
                         // Encode function parameters
@@ -135,13 +136,11 @@ public class DynamicFunctionGenerator {
                         };
             
                         // Send the request and get response
-                        json response = check self.rpcClient->post("/", requestBody);
-                        if response is json {
-                            return response;
-                        } else {
-                            return error("Blockchain call failed");
-                        }
-                        """.formatted(parameterList, functionSelector);
+                        record {string result;} response = check self.rpcClient->post("/", requestBody);
+                        
+                        %s result = decodeResult(response.result);
+
+                        """.formatted(parameterList, functionSelector, returnType);
         }
 
         private static FunctionDefinitionNode generateResourceFunction(AbiEntry abiEntry) {
@@ -154,7 +153,7 @@ public class DynamicFunctionGenerator {
 
                 // Generate function signature and body
                 String functionSignature = generateResourceFunctionSignature(inputs, outputs, methodName);
-                String functionBody = generateResourceFunctionBody(inputs, functionSelector);
+                String functionBody = generateResourceFunctionBody(inputs, outputs, functionSelector);
 
                 // Ensure correct Ballerina syntax
                 return (FunctionDefinitionNode) NodeParser.parseObjectMember(
