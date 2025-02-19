@@ -43,6 +43,6 @@ Config.toml
 # Ignore Gradle build output directory
 build
 
-
+.VSCodeCounter
 
 linkedin.txt
