@@ -12,7 +12,7 @@ Event Listening: Subscribe to contract events and handle real-time data.
 Web3 Connectivity: Built-in support for HTTP and WebSocket-based JSON-RPC endpoints.
 
 ## Getting Started
-###Prerequisites
+### Prerequisites
 Ensure you have the following installed:
 
 - Ballerina Swan Lake (Latest Version) – Install Ballerina
