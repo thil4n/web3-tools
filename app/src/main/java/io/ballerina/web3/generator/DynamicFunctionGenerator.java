@@ -107,7 +107,7 @@ public class DynamicFunctionGenerator {
                         case "int256":
                                 return "decimal|error result = check hexToDecimal(response.result.substring(2));\n";
                         case "bool":
-                                return "boolean result = response.result.equals(\"0x1\");\n";
+                                return "boolean result = response.result == \"0x1\";\n";
                         case "address":
                                 return "string result = \"0x\" + response.result.substring(26);\n"; // Last 20 bytes
                         case "string":
