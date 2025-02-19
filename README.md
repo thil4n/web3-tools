@@ -25,7 +25,7 @@ Clone the Repository
 
 ## Usage Example
 
-```
+```ballerina
 import ballerina/io;
 import ballerina/web3;
 
