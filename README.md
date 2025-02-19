@@ -4,8 +4,6 @@
 The Ballerina-Web3-Tool is a development toolkit designed to simplify the integration of Web3 functionalities into Ballerina applications. 
 It provides a seamless experience for developers to interact with Ethereum-based blockchains, enabling smart contract interactions, account management, and transaction processing.
 
-This tool is built with Ballerina, a language designed for developing network-distributed applications, making it an excellent fit for blockchain and Web3 development.
-
 ## Key Features
 Smart Contract Interaction: Easily connect to and interact with Ethereum smart contracts.
 Account Management: Manage wallets, sign transactions, and perform ETH transfers.
