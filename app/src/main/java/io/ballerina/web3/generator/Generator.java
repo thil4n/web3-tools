@@ -18,12 +18,14 @@
 
 package io.ballerina.web3.generator;
 
+import java.util.List;
+
 import org.ballerinalang.formatter.core.FormatterException;
 import io.ballerina.web3.abi.AbiEntry;
 import io.ballerina.web3.generator.utils.FileUtils;
 
 public class Generator {
-    public static void generate(AbiEntry[] abiEntries) throws FormatterException {
+    public static void generate(List<AbiEntry> abiEntries) throws FormatterException {
         String sourceCode = ClientGenerator.generate(abiEntries);
 
         FileUtils.writeToFile("src/output/main.bal", sourceCode);

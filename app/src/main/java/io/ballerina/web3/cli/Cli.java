@@ -26,15 +26,15 @@ import picocli.CommandLine.Option;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
-@Command(name = "web3-cli", mixinStandardHelpOptions = true, version = "1.0",
-        description = "Generates Ballerina connectors from Ethereum Smart Contract ABI.")
+@Command(name = "web3-cli", mixinStandardHelpOptions = true, version = "1.0", description = "Generates Ballerina connectors from Ethereum Smart Contract ABI.")
 public class Cli implements Runnable {
 
-    @Option(names = {"-a", "--abi"}, required = true, description = "Path to the ABI JSON file")
+    @Option(names = { "-a", "--abi" }, required = true, description = "Path to the ABI JSON file")
     private String abiPath;
 
-    @Option(names = {"-o", "--output"}, description = "Output directory")
+    @Option(names = { "-o", "--output" }, description = "Output directory")
     private String outputDir = "./generated/";
 
     @Override
@@ -60,7 +60,7 @@ public class Cli implements Runnable {
 
         AbiReader abiReader = new AbiReader(abiPath);
 
-        AbiEntry[] abiEntries = abiReader.read();
+        List<AbiEntry> abiEntries = abiReader.read();
 
         Generator.generate(abiEntries);
     }

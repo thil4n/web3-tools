@@ -21,6 +21,7 @@ package io.ballerina.web3.abi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class AbiReader {
@@ -31,7 +32,7 @@ public class AbiReader {
         this.abiPath = abiPath;
     }
 
-    public AbiEntry[] read() throws Exception {
+    public List<AbiEntry> read() throws Exception {
 
         // Load ABI JSON file
         ObjectMapper objectMapper = new ObjectMapper();

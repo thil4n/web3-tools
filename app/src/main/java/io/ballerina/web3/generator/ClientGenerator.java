@@ -30,7 +30,7 @@ import org.ballerinalang.formatter.core.FormatterException;
 
 public class ClientGenerator {
 
-        public static String generate(AbiEntry[] abiEntries) throws FormatterException {
+        public static String generate(List<AbiEntry> abiEntries) throws FormatterException {
 
                 // Using NodeParser API with templates to generate client declaration
                 ClassDefinitionNode serviceDecl = (ClassDefinitionNode) NodeParser.parseModuleMemberDeclaration(
@@ -53,8 +53,7 @@ public class ClientGenerator {
                 data.append("\n// HTTP client to send JSON-RPC requests to the Ethereum node.\n");
                 data.append("private final http:Client rpcClient;\n");
 
-
-                Node clientProperties =   NodeParser.parseObjectMember(data.toString());
+                Node clientProperties = NodeParser.parseObjectMember(data.toString());
 
                 members.add(clientProperties);
 

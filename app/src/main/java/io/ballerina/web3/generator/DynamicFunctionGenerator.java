@@ -189,7 +189,7 @@ public class DynamicFunctionGenerator {
                                                 """, functionSignature, functionBody));
         }
 
-        public static List<Node> generate(AbiEntry[] abiEntries) throws FormatterException {
+        public static List<Node> generate(List<AbiEntry> abiEntries) throws FormatterException {
 
                 List<Node> memberNodes = new ArrayList<>();
 
