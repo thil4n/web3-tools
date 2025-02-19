@@ -20,26 +20,30 @@ package io.ballerina.web3.abi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class AbiReader {
 
     private String abiPath;
 
-    public AbiReader(String abiPath){
+    public AbiReader(String abiPath) {
         this.abiPath = abiPath;
     }
 
-    public  AbiEntry[] read() throws Exception {
+    public AbiEntry[] read() throws Exception {
 
-            // Load ABI JSON file
-            ObjectMapper objectMapper = new ObjectMapper();
-            File file = new File(abiPath);
+        // Load ABI JSON file
+        ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(abiPath);
 
-            // Deserialize JSON
-            ContractJson contractJson = objectMapper.readValue(file,ContractJson.class);
+        // Deserialize JSON
+        ContractJson contractJson = objectMapper.readValue(file, ContractJson.class);
 
-            AbiEntry[] abiEntries = contractJson.getAbi();
+        AbiEntry[] abiEntries = contractJson.getAbi();
 
-            return abiEntries;
+        return Arrays.stream(abiEntries)
+                .filter(entry -> "function".equals(entry.getType()))
+                .collect(Collectors.toList());
     }
 }
