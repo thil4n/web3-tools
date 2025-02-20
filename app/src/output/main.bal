@@ -294,7 +294,7 @@ public client class Web3 {
 
     }
 
-    resource isolated function post safeTransferFrom(string from_method, string to, decimal tokenId) returns error? {
+    resource isolated function post safeTransferFrom(string from_param, string to, decimal tokenId) returns error? {
         // Encode function parameters
         string encodedParameters = encodeParameters([from , to, tokenId]                          );
         string callData = "0x" + "1bca66ec" + encodedParameters;
@@ -315,7 +315,7 @@ public client class Web3 {
 
     }
 
-    resource isolated function post safeTransferFrom(string from_method, string to, decimal tokenId, string data) returns error? {
+    resource isolated function post safeTransferFrom(string from_param, string to, decimal tokenId, string data) returns error? {
         // Encode function parameters
         string encodedParameters = encodeParameters([from , to, tokenId, data]                          );
         string callData = "0x" + "fd43c5ac" + encodedParameters;
@@ -495,7 +495,7 @@ public client class Web3 {
         return result;
     }
 
-    resource isolated function post transferFrom(string from_method, string to, decimal tokenId) returns error? {
+    resource isolated function post transferFrom(string from_param, string to, decimal tokenId) returns error? {
         // Encode function parameters
         string encodedParameters = encodeParameters([from , to, tokenId]                          );
         string callData = "0x" + "944179b4" + encodedParameters;

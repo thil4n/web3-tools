@@ -126,8 +126,11 @@ public class DynamicFunctionGenerator {
                 StringBuilder data = new StringBuilder();
 
                 for (int i = 0; i < inputs.size(); i++) {
+
                         AbiInput input = inputs.get(i);
-                        data.append(input.getName());
+                        String sanitizedInputName = BallerinaUtils.sanitizeParameterName(input.getName(), i);
+
+                        data.append(sanitizedInputName);
 
                         if (i < inputs.size() - 1) {
                                 data.append(", "); // Add comma separator
