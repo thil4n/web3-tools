@@ -200,7 +200,7 @@ public client class Web3 {
         // Send the request and get response
         record {string result;} response = check self.rpcClient->post("/", requestBody);
 
-        boolean result = response.result.equals        ("0x1");
+        boolean result = response.result == "0x1";
         return result;
     }
 
@@ -376,7 +376,7 @@ public client class Web3 {
         // Send the request and get response
         record {string result;} response = check self.rpcClient->post("/", requestBody);
 
-        boolean result = response.result.equals        ("0x1");
+        boolean result = response.result == "0x1";
         return result;
     }
 
@@ -445,7 +445,7 @@ public client class Web3 {
         // Send the request and get response
         record {string result;} response = check self.rpcClient->post("/", requestBody);
 
-        boolean result = response.result.equals        ("0x1");
+        boolean result = response.result == "0x1";
         return result;
     }
 
