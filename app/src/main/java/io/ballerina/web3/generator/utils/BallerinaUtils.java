@@ -25,13 +25,12 @@ public class BallerinaUtils {
     private static final Set<String> RESERVED_KEYWORDS = Set.of(
             "function", "int", "boolean", "string", "record", "resource", "isolated",
             "error", "returns", "public", "private", "remote", "client", "self", "if", "else",
-            "while", "foreach", "continue", "break", "return", "import", "type", "map"
-    );
+            "while", "foreach", "continue", "break", "return", "import", "type", "map");
 
     /**
      * Sanitizes the method name to ensure it is valid in Ballerina.
      */
-    public static String sanitizeMethodName(String methodName) {
+    public static String sanitizeName(String methodName) {
         // Replace invalid characters (e.g., spaces, special chars)
         String sanitized = methodName.replaceAll("[^a-zA-Z0-9_]", "_");
 

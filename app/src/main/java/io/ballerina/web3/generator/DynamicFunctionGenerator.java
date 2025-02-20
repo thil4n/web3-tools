@@ -172,7 +172,7 @@ public class DynamicFunctionGenerator {
                 List<AbiInput> inputs = abiEntry.getInputs();
                 List<AbiOutput> outputs = abiEntry.getOutputs();
 
-                String methodName = BallerinaUtils.sanitizeMethodName(abiEntry.getName());
+                String methodName = BallerinaUtils.sanitizeName(abiEntry.getName());
 
                 String functionSelector = CodeGeneratorUtils.generateFunctionSelector(abiEntry);
 

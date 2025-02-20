@@ -223,7 +223,7 @@ public client class Web3 {
         // Send the request and get response
         record {string result;} response = check self.rpcClient->post("/", requestBody);
 
-        string result = hexToString(response.result.substring(2));
+        string result = response.result.substring(2);
         return result;
     }
 
@@ -399,7 +399,7 @@ public client class Web3 {
         // Send the request and get response
         record {string result;} response = check self.rpcClient->post("/", requestBody);
 
-        string result = hexToString(response.result.substring(2));
+        string result = response.result.substring(2);
         return result;
     }
 
@@ -491,7 +491,7 @@ public client class Web3 {
         // Send the request and get response
         record {string result;} response = check self.rpcClient->post("/", requestBody);
 
-        string result = hexToString(response.result.substring(2));
+        string result = response.result.substring(2);
         return result;
     }
 
