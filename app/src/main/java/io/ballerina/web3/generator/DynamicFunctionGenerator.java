@@ -118,6 +118,8 @@ public class DynamicFunctionGenerator {
                                 return "string result = \"0x\" + response.result.substring(26);\n"; // Last 20 bytes
                         case "string":
                                 return "string result = response.result.substring(2);\n";
+                        case "tuple[]":
+                                return "anydata[] result = []; // Not yet supported \n";
                         default:
                                 return "string result = response;\n // Unsupported type: " + outputType + "\n";
                 }

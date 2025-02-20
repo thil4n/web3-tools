@@ -357,8 +357,7 @@ public client class Web3 {
         // Send the request and get response
         record {string result;} response = check self.rpcClient->post("/", requestBody);
 
-        string result = response;
-        // Unsupported type: tuple[]
+        anydata[] result = []; // Not yet supported 
         return result;
     }
 }
