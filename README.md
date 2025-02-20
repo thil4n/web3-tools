@@ -27,12 +27,9 @@ Clone the Repository
 
 ```ballerina
 import ballerina/io;
-import ballerina/web3;
 
 public function main() returns error? {
-    web3:Web3Client client = check new ("https://mainnet.infura.io/v3/${WEB3_INFURA_PROJECT_ID}");
-    string balance = check client.getBalance("0xYourEthereumAddress");
-    io:println("Balance: ", balance);
+
 }
 ```
 
