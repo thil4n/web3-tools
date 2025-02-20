@@ -33,7 +33,8 @@ public class AbiReader {
     }
 
     private static final List<String> METHODS_TO_SKIP = List.of(
-            "safeTransferFrom", "approve", "setApprovalForAll", "transferFrom", "renounceOwnership");
+            "safeTransferFrom", "approve", "setApprovalForAll", "transferFrom", "renounceOwnership",
+            "isApprovedForAll", "owner", "supportsInterface", "symbol", "getApproved");
 
     public List<AbiEntry> read() throws Exception {
 

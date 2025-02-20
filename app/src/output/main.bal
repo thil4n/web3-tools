@@ -114,27 +114,6 @@ public client class Web3 {
         return weiAmount;
     }
 
-    resource isolated function post approve(string to, decimal tokenId) returns error? {
-        // Encode function parameters
-        string encodedParameters = encodeParameters([to, tokenId]);
-        string callData = "0x" + "81c81e27" + encodedParameters;
-
-        // Generate the JSON-RPC request body
-        json requestBody = {
-            "jsonrpc": "2.0",
-            "method": "eth_call",
-            "params": [
-                {"to": self.address, "data": callData},
-                "latest"
-            ],
-            "id": 1
-        };
-
-        // Send the request and get response
-        record {string result;} response = check self.rpcClient->post("/", requestBody);
-
-    }
-
     resource isolated function post balanceOf(string owner) returns decimal|error? {
         // Encode function parameters
         string encodedParameters = encodeParameters([owner]);
@@ -155,52 +134,6 @@ public client class Web3 {
         record {string result;} response = check self.rpcClient->post("/", requestBody);
 
         decimal|error result = check hexToDecimal(response.result.substring(2));
-        return result;
-    }
-
-    resource isolated function post getApproved(decimal tokenId) returns string|error? {
-        // Encode function parameters
-        string encodedParameters = encodeParameters([tokenId]);
-        string callData = "0x" + "081812fc" + encodedParameters;
-
-        // Generate the JSON-RPC request body
-        json requestBody = {
-            "jsonrpc": "2.0",
-            "method": "eth_call",
-            "params": [
-                {"to": self.address, "data": callData},
-                "latest"
-            ],
-            "id": 1
-        };
-
-        // Send the request and get response
-        record {string result;} response = check self.rpcClient->post("/", requestBody);
-
-        string result = "0x" + response.result.substring(26);
-        return result;
-    }
-
-    resource isolated function post isApprovedForAll(string owner, string operator) returns boolean|error? {
-        // Encode function parameters
-        string encodedParameters = encodeParameters([owner, operator]);
-        string callData = "0x" + "0936ab2e" + encodedParameters;
-
-        // Generate the JSON-RPC request body
-        json requestBody = {
-            "jsonrpc": "2.0",
-            "method": "eth_call",
-            "params": [
-                {"to": self.address, "data": callData},
-                "latest"
-            ],
-            "id": 1
-        };
-
-        // Send the request and get response
-        record {string result;} response = check self.rpcClient->post("/", requestBody);
-
-        boolean result = response.result == "0x1";
         return result;
     }
 
@@ -227,29 +160,6 @@ public client class Web3 {
         return result;
     }
 
-    resource isolated function post owner() returns string|error? {
-        // Encode function parameters
-        string encodedParameters = encodeParameters([]);
-        string callData = "0x" + "8da5cb5b" + encodedParameters;
-
-        // Generate the JSON-RPC request body
-        json requestBody = {
-            "jsonrpc": "2.0",
-            "method": "eth_call",
-            "params": [
-                {"to": self.address, "data": callData},
-                "latest"
-            ],
-            "id": 1
-        };
-
-        // Send the request and get response
-        record {string result;} response = check self.rpcClient->post("/", requestBody);
-
-        string result = "0x" + response.result.substring(26);
-        return result;
-    }
-
     resource isolated function post ownerOf(decimal tokenId) returns string|error? {
         // Encode function parameters
         string encodedParameters = encodeParameters([tokenId]);
@@ -270,136 +180,6 @@ public client class Web3 {
         record {string result;} response = check self.rpcClient->post("/", requestBody);
 
         string result = "0x" + response.result.substring(26);
-        return result;
-    }
-
-    resource isolated function post renounceOwnership() returns error? {
-        // Encode function parameters
-        string encodedParameters = encodeParameters([]);
-        string callData = "0x" + "715018a6" + encodedParameters;
-
-        // Generate the JSON-RPC request body
-        json requestBody = {
-            "jsonrpc": "2.0",
-            "method": "eth_call",
-            "params": [
-                {"to": self.address, "data": callData},
-                "latest"
-            ],
-            "id": 1
-        };
-
-        // Send the request and get response
-        record {string result;} response = check self.rpcClient->post("/", requestBody);
-
-    }
-
-    resource isolated function post safeTransferFrom(string from_param, string to, decimal tokenId) returns error? {
-        // Encode function parameters
-        string encodedParameters = encodeParameters([from_param, to, tokenId]);
-        string callData = "0x" + "1bca66ec" + encodedParameters;
-
-        // Generate the JSON-RPC request body
-        json requestBody = {
-            "jsonrpc": "2.0",
-            "method": "eth_call",
-            "params": [
-                {"to": self.address, "data": callData},
-                "latest"
-            ],
-            "id": 1
-        };
-
-        // Send the request and get response
-        record {string result;} response = check self.rpcClient->post("/", requestBody);
-
-    }
-
-    resource isolated function post safeTransferFrom2(string from_param, string to, decimal tokenId, string data) returns error? {
-        // Encode function parameters
-        string encodedParameters = encodeParameters([from_param, to, tokenId, data]);
-        string callData = "0x" + "fd43c5ac" + encodedParameters;
-
-        // Generate the JSON-RPC request body
-        json requestBody = {
-            "jsonrpc": "2.0",
-            "method": "eth_call",
-            "params": [
-                {"to": self.address, "data": callData},
-                "latest"
-            ],
-            "id": 1
-        };
-
-        // Send the request and get response
-        record {string result;} response = check self.rpcClient->post("/", requestBody);
-
-    }
-
-    resource isolated function post setApprovalForAll(string operator, boolean approved) returns error? {
-        // Encode function parameters
-        string encodedParameters = encodeParameters([operator, approved]);
-        string callData = "0x" + "7122a46a" + encodedParameters;
-
-        // Generate the JSON-RPC request body
-        json requestBody = {
-            "jsonrpc": "2.0",
-            "method": "eth_call",
-            "params": [
-                {"to": self.address, "data": callData},
-                "latest"
-            ],
-            "id": 1
-        };
-
-        // Send the request and get response
-        record {string result;} response = check self.rpcClient->post("/", requestBody);
-
-    }
-
-    resource isolated function post supportsInterface(anydata interfaceId) returns boolean|error? {
-        // Encode function parameters
-        string encodedParameters = encodeParameters([interfaceId]);
-        string callData = "0x" + "01ffc9a7" + encodedParameters;
-
-        // Generate the JSON-RPC request body
-        json requestBody = {
-            "jsonrpc": "2.0",
-            "method": "eth_call",
-            "params": [
-                {"to": self.address, "data": callData},
-                "latest"
-            ],
-            "id": 1
-        };
-
-        // Send the request and get response
-        record {string result;} response = check self.rpcClient->post("/", requestBody);
-
-        boolean result = response.result == "0x1";
-        return result;
-    }
-
-    resource isolated function post symbol() returns string|error? {
-        // Encode function parameters
-        string encodedParameters = encodeParameters([]);
-        string callData = "0x" + "95d89b41" + encodedParameters;
-
-        // Generate the JSON-RPC request body
-        json requestBody = {
-            "jsonrpc": "2.0",
-            "method": "eth_call",
-            "params": [
-                {"to": self.address, "data": callData},
-                "latest"
-            ],
-            "id": 1
-        };
-
-        // Send the request and get response
-        record {string result;} response = check self.rpcClient->post("/", requestBody);
-
-        string result = response.result.substring(2);
         return result;
     }
 
@@ -495,27 +275,6 @@ public client class Web3 {
         return result;
     }
 
-    resource isolated function post transferFrom(string from_param, string to, decimal tokenId) returns error? {
-        // Encode function parameters
-        string encodedParameters = encodeParameters([from_param, to, tokenId]);
-        string callData = "0x" + "944179b4" + encodedParameters;
-
-        // Generate the JSON-RPC request body
-        json requestBody = {
-            "jsonrpc": "2.0",
-            "method": "eth_call",
-            "params": [
-                {"to": self.address, "data": callData},
-                "latest"
-            ],
-            "id": 1
-        };
-
-        // Send the request and get response
-        record {string result;} response = check self.rpcClient->post("/", requestBody);
-
-    }
-
     resource isolated function post transferOwnership(string newOwner) returns error? {
         // Encode function parameters
         string encodedParameters = encodeParameters([newOwner]);
@@ -598,6 +357,7 @@ public client class Web3 {
         // Send the request and get response
         record {string result;} response = check self.rpcClient->post("/", requestBody);
 
+        string result = response;
         // Unsupported type: tuple[]
         return result;
     }

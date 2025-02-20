@@ -35,6 +35,7 @@ import io.ballerina.web3.generator.utils.CodeGeneratorUtils;
 public class DynamicFunctionGenerator {
 
         private static String convertAbiTypeToBallerina(String abiType) {
+                System.out.println("n" + abiType);
                 if (abiType.endsWith("[]")) {
                         return convertAbiTypeToBallerina(abiType.replace("[]", "")) + "[]";
                 }
@@ -118,7 +119,7 @@ public class DynamicFunctionGenerator {
                         case "string":
                                 return "string result = response.result.substring(2);\n";
                         default:
-                                return "// Unsupported type: " + outputType + "\n";
+                                return "string result = response;\n // Unsupported type: " + outputType + "\n";
                 }
         }
 
