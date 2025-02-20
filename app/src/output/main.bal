@@ -296,7 +296,7 @@ public client class Web3 {
 
     resource isolated function post safeTransferFrom(string from_param, string to, decimal tokenId) returns error? {
         // Encode function parameters
-        string encodedParameters = encodeParameters([from , to, tokenId]                          );
+        string encodedParameters = encodeParameters([from_param, to, tokenId]);
         string callData = "0x" + "1bca66ec" + encodedParameters;
 
         // Generate the JSON-RPC request body
@@ -315,9 +315,9 @@ public client class Web3 {
 
     }
 
-    resource isolated function post safeTransferFrom(string from_param, string to, decimal tokenId, string data) returns error? {
+    resource isolated function post safeTransferFrom2(string from_param, string to, decimal tokenId, string data) returns error? {
         // Encode function parameters
-        string encodedParameters = encodeParameters([from , to, tokenId, data]                          );
+        string encodedParameters = encodeParameters([from_param, to, tokenId, data]);
         string callData = "0x" + "fd43c5ac" + encodedParameters;
 
         // Generate the JSON-RPC request body
@@ -428,7 +428,7 @@ public client class Web3 {
 
     resource isolated function post tokenIdToListed(decimal param0) returns boolean|error? {
         // Encode function parameters
-        string encodedParameters = encodeParameters([]);
+        string encodedParameters = encodeParameters([param0]);
         string callData = "0x" + "9c402c26" + encodedParameters;
 
         // Generate the JSON-RPC request body
@@ -451,7 +451,7 @@ public client class Web3 {
 
     resource isolated function post tokenIdToPrice(decimal param0) returns decimal|error? {
         // Encode function parameters
-        string encodedParameters = encodeParameters([]);
+        string encodedParameters = encodeParameters([param0]);
         string callData = "0x" + "f4812eb9" + encodedParameters;
 
         // Generate the JSON-RPC request body
@@ -497,7 +497,7 @@ public client class Web3 {
 
     resource isolated function post transferFrom(string from_param, string to, decimal tokenId) returns error? {
         // Encode function parameters
-        string encodedParameters = encodeParameters([from , to, tokenId]                          );
+        string encodedParameters = encodeParameters([from_param, to, tokenId]);
         string callData = "0x" + "944179b4" + encodedParameters;
 
         // Generate the JSON-RPC request body

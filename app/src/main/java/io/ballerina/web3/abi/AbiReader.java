@@ -32,6 +32,9 @@ public class AbiReader {
         this.abiPath = abiPath;
     }
 
+    private static final List<String> METHODS_TO_SKIP = List.of(
+            "safeTransferFrom", "approve", "setApprovalForAll", "transferFrom", "renounceOwnership");
+
     public List<AbiEntry> read() throws Exception {
 
         // Load ABI JSON file
@@ -44,7 +47,8 @@ public class AbiReader {
         AbiEntry[] abiEntries = contractJson.getAbi();
 
         return Arrays.stream(abiEntries)
-                .filter(entry -> "function".equals(entry.getType()))
+                .filter(entry -> "function".equals(entry.getType())) // Consider only functions
+                .filter(entry -> !METHODS_TO_SKIP.contains(entry.getName())) // Skip default methods
                 .collect(Collectors.toList());
     }
 }
