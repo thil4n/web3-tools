@@ -294,7 +294,7 @@ public client class Web3 {
 
     }
 
-    resource isolated function post safeTransferFrom(string from, string to, decimal tokenId) returns error? {
+    resource isolated function post safeTransferFrom(string from_method, string to, decimal tokenId) returns error? {
         // Encode function parameters
         string encodedParameters = encodeParameters([from , to, tokenId]                          );
         string callData = "0x" + "1bca66ec" + encodedParameters;
@@ -315,7 +315,7 @@ public client class Web3 {
 
     }
 
-    resource isolated function post safeTransferFrom(string from, string to, decimal tokenId, string data) returns error? {
+    resource isolated function post safeTransferFrom(string from_method, string to, decimal tokenId, string data) returns error? {
         // Encode function parameters
         string encodedParameters = encodeParameters([from , to, tokenId, data]                          );
         string callData = "0x" + "fd43c5ac" + encodedParameters;
@@ -426,7 +426,7 @@ public client class Web3 {
         return result;
     }
 
-    resource isolated function post tokenIdToListed(decimal ) returns boolean|error? {
+    resource isolated function post tokenIdToListed(decimal param0) returns boolean|error? {
         // Encode function parameters
         string encodedParameters = encodeParameters([]);
         string callData = "0x" + "9c402c26" + encodedParameters;
@@ -449,7 +449,7 @@ public client class Web3 {
         return result;
     }
 
-    resource isolated function post tokenIdToPrice(decimal ) returns decimal|error? {
+    resource isolated function post tokenIdToPrice(decimal param0) returns decimal|error? {
         // Encode function parameters
         string encodedParameters = encodeParameters([]);
         string callData = "0x" + "f4812eb9" + encodedParameters;
@@ -495,7 +495,7 @@ public client class Web3 {
         return result;
     }
 
-    resource isolated function post transferFrom(string from, string to, decimal tokenId) returns error? {
+    resource isolated function post transferFrom(string from_method, string to, decimal tokenId) returns error? {
         // Encode function parameters
         string encodedParameters = encodeParameters([from , to, tokenId]                          );
         string callData = "0x" + "944179b4" + encodedParameters;

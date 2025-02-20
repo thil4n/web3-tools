@@ -25,25 +25,41 @@ public class BallerinaUtils {
     private static final Set<String> RESERVED_KEYWORDS = Set.of(
             "function", "int", "boolean", "string", "record", "resource", "isolated",
             "error", "returns", "public", "private", "remote", "client", "self", "if", "else",
-            "while", "foreach", "continue", "break", "return", "import", "type", "map");
+            "while", "foreach", "continue", "break", "return", "import", "type", "map", "from");
 
     /**
-     * Sanitizes the method name to ensure it is valid in Ballerina.
+     * Sanitizes the identifier to ensure is valid in Ballerina.
      */
-    public static String sanitizeName(String methodName) {
-        // Replace invalid characters (e.g., spaces, special chars)
-        String sanitized = methodName.replaceAll("[^a-zA-Z0-9_]", "_");
+    private static String sanitizeIdentifier(String identifier, String suffixIfKeyword) {
+        String sanitized = identifier.replaceAll("[^a-zA-Z0-9_]", "_");
 
-        // Ensure it does not start with a number
         if (Character.isDigit(sanitized.charAt(0))) {
             sanitized = "_" + sanitized;
         }
 
-        // Ensure it does not conflict with reserved keywords
         if (RESERVED_KEYWORDS.contains(sanitized)) {
-            sanitized = sanitized + "_method"; // Append _method to avoid conflicts
+            sanitized += suffixIfKeyword;
         }
 
         return sanitized;
+    }
+
+    /**
+     * Sanitizes the method name to ensure it is valid in Ballerina.
+     */
+    public static String sanitizeMethodName(String methodName) {
+        return sanitizeIdentifier(methodName, "_method");
+    }
+
+    /**
+     * Sanitizes the parameter name to ensure it is valid in Ballerina.
+     */
+    public static String sanitizeParameterName(String parameterName, int index) {
+
+        if (parameterName == null || parameterName.isEmpty()) {
+            return "param" + index;
+        }
+        return sanitizeIdentifier(parameterName, "_param");
+
     }
 }

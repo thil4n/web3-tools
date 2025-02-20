@@ -18,17 +18,19 @@
 
 package io.ballerina.web3.generator;
 
-import io.ballerina.compiler.syntax.tree.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.ballerinalang.formatter.core.FormatterException;
+
+import io.ballerina.compiler.syntax.tree.FunctionDefinitionNode;
+import io.ballerina.compiler.syntax.tree.Node;
+import io.ballerina.compiler.syntax.tree.NodeParser;
 import io.ballerina.web3.abi.AbiEntry;
 import io.ballerina.web3.abi.AbiInput;
 import io.ballerina.web3.abi.AbiOutput;
 import io.ballerina.web3.generator.utils.BallerinaUtils;
 import io.ballerina.web3.generator.utils.CodeGeneratorUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.ballerinalang.formatter.core.FormatterException;
 
 public class DynamicFunctionGenerator {
 
@@ -83,9 +85,11 @@ public class DynamicFunctionGenerator {
                 if (!inputs.isEmpty()) {
                         for (int i = 0; i < inputs.size(); i++) {
                                 AbiInput input = inputs.get(i);
-                                String inputName = BallerinaUtils.sanitizeName(input.getName());
+
+                                String sanitizedInputName = BallerinaUtils.sanitizeParameterName(input.getName(), i);
+
                                 data.append(convertAbiTypeToBallerina(input.getType())).append(" ")
-                                                .append(inputName);
+                                                .append(sanitizedInputName);
 
                                 if (i < inputs.size() - 1) {
                                         data.append(", "); // Add comma separator
@@ -173,7 +177,7 @@ public class DynamicFunctionGenerator {
                 List<AbiInput> inputs = abiEntry.getInputs();
                 List<AbiOutput> outputs = abiEntry.getOutputs();
 
-                String methodName = BallerinaUtils.sanitizeName(abiEntry.getName());
+                String methodName = BallerinaUtils.sanitizeMethodName(abiEntry.getName());
 
                 String functionSelector = CodeGeneratorUtils.generateFunctionSelector(abiEntry);
 
