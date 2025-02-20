@@ -18,6 +18,7 @@
 
 package io.ballerina.web3.cli;
 
+import io.ballerina.cli.BLauncherCmd;
 import io.ballerina.web3.abi.AbiEntry;
 import io.ballerina.web3.abi.AbiReader;
 import io.ballerina.web3.generator.Generator;
@@ -28,8 +29,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-@Command(name = "web3-cli", mixinStandardHelpOptions = true, version = "1.0", description = "Generates Ballerina connectors from Ethereum Smart Contract ABI.")
-public class Cli implements Runnable {
+@Command(name = "web3", description = "Generates Ballerina connectors from Ethereum Smart Contract ABI.")
+public class Cli implements BLauncherCmd {
+
+    private static final String CMD_NAME = "web3";
 
     @Option(names = { "-a", "--abi" }, required = true, description = "Path to the ABI JSON file")
     private String abiPath;
@@ -37,9 +40,16 @@ public class Cli implements Runnable {
     @Option(names = { "-o", "--output" }, description = "Output directory")
     private String outputDir = "./generated/";
 
+    @Option(names = { "-h", "--help" }, usageHelp = true, description = "Display help information")
+    private boolean helpFlag;
+
     @Override
-    public void run() {
-        // Validate ABI file before processing
+    public void execute() {
+        if (helpFlag) {
+            printUsage(new StringBuilder());
+            return;
+        }
+
         if (!isFileValid(abiPath)) {
             System.err.println("Error: ABI file does not exist or is not a valid file: " + abiPath);
             return;
@@ -56,17 +66,34 @@ public class Cli implements Runnable {
     }
 
     private void generateBallerinaConnector() throws Exception {
-        System.out.println("Generating Ballerina connector...");
-
         AbiReader abiReader = new AbiReader(abiPath);
-
         List<AbiEntry> abiEntries = abiReader.read();
-
-        Generator.generate(abiEntries);
+        Generator.generate(abiEntries, outputDir);
     }
 
     private boolean isFileValid(String filePath) {
         Path path = Path.of(filePath);
         return Files.exists(path) && Files.isRegularFile(path) && Files.isReadable(path);
+    }
+
+    @Override
+    public String getName() {
+        return CMD_NAME;
+    }
+
+    @Override
+    public void printLongDesc(StringBuilder out) {
+        out.append("Generates Ballerina connectors from Ethereum Smart Contract ABI.\n")
+                .append("This tool takes an ABI JSON file and generates a Ballerina connector.\n");
+    }
+
+    @Override
+    public void printUsage(StringBuilder out) {
+        out.append("bal web3 -a <path/to/abi.json> [-o <output-dir>]\n");
+    }
+
+    @Override
+    public void setParentCmdParser(picocli.CommandLine parentCmdParser) {
+        // Not needed for now
     }
 }
