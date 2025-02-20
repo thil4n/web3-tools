@@ -111,7 +111,7 @@ public class DynamicFunctionGenerator {
                         case "address":
                                 return "string result = \"0x\" + response.result.substring(26);\n"; // Last 20 bytes
                         case "string":
-                                return "string result = hexToString(response.result.substring(2));\n";
+                                return "string result = response.result.substring(2);\n";
                         default:
                                 return "// Unsupported type: " + outputType + "\n";
                 }
