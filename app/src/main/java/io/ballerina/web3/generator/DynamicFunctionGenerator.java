@@ -83,8 +83,9 @@ public class DynamicFunctionGenerator {
                 if (!inputs.isEmpty()) {
                         for (int i = 0; i < inputs.size(); i++) {
                                 AbiInput input = inputs.get(i);
+                                String inputName = BallerinaUtils.sanitizeName(input.getName());
                                 data.append(convertAbiTypeToBallerina(input.getType())).append(" ")
-                                                .append(input.getName());
+                                                .append(inputName);
 
                                 if (i < inputs.size() - 1) {
                                         data.append(", "); // Add comma separator
