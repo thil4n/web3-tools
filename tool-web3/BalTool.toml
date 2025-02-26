@@ -1,5 +1,5 @@
 [tool]
-id = “openapi”
+id = “web3”
 
 [[dependency]] # tool jar
 path = "../bal-openapi-tool-2.7.0.jar"
