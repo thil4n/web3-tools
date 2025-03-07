@@ -20,101 +20,35 @@ bal tool pull web3
 
 The Web3 tool provides the following capabilities.
 
-1. Generate Ballerina client functions for a given Web3 specification.
-2. Generate Ballerina record types for an XML schema provided in the Web3 specification.
+1. Generate Ballerina client for interacting with basic Blockchain features.
+2. Generate Ballerina connector for specific Smart contract.
 
-The client generated from a Web3 file can be used in your applications to call the SOAP-based web service defined in the Web3.
+The client generated from a smart contract can be used to call the methods defined in the solidity smart contract.
 
-The following command will generate Ballerina client stubs and records for a given Web3 file. It is mandatory to run the command within a Ballerina package.
+The following command will generate Ballerina client for the given smart contract.
 
 ```bash
-bal web3 <web3-file-path>
-         [--operations <operation-uris>]
-         [--module <output-module-name>]
-         [--port <port-name>]
+bal web3 -a <abi-file-path> -o <output-file-path>
 ```
 
 ### Command options
 
-| Option                              | Description                                                                                                                                                                        | Mandatory/Optional |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| `<web3-file-path>`                  | The path of the Web3 file.                                                                                                                                                         | Mandatory          |
-| `--operations <operation-uris>`     | A comma-separated list of operation URIs for which client methods should be generated. If not provided, methods for all operations in the Web3 file will be generated.             | Optional           |
-| `-m, --module <output-module-name>` | The name of the module where the generated client and record types will be placed. If not provided, output files will be saved to the project default package.                     | Optional           |
-| `-p, --port <port-name>`            | The name of the port that defines the service endpoint. If specified, a client will be generated only for this port. Otherwise, clients for all available ports will be generated. | Optional           |
-
-### Generate Ballerina clients and types from a Web3 file
-
-```bash
-bal web3 <web3-file-path>
-```
-
-This command generates Ballerina clients and record types for all operations in the given Web3 file.
+| Option            | Description                                                                                    | Mandatory/Optional |
+| ----------------- | ---------------------------------------------------------------------------------------------- | ------------------ |
+| `<abi-file-path>` | The path of the Solidity ABI file.                                                             | Mandatory          |
+| `<output-path>`   | The path of the output directory. If not provided, the current working directory will be used. | Optional           |
 
 For example,
 
 ```bash
-bal web3 calculator.web3
+bal web3 -a Token.json
 ```
 
 Upon successful execution, the following files will be created inside the default module in the Ballerina project.
 
 ```bash
 client.bal (There can be multiple client files depending on the Web3 file)
-types.bal
-```
-
-### Generate a Ballerina client and types for a specific module
-
-```bash
-bal web3 <web3-file-path> --module <output-module-name>
-```
-
-This command generates Ballerina clients and record types for the given Web3 file and saves them in the `<output-module-name>` submodule within the Ballerina project.
-
-For example,
-
-```bash
-bal web3 calculator.web3 --module custom
-```
-
-This generates a Ballerina client (`client.bal`) and record types (`types.bal`) for the `calculator.web3` Web3 specification.
-
-Upon successful execution, the following files will be created in the `custom` submodule within the Ballerina project.
-
-```bash
-modules/
-└── custom/
-    └── client.bal (There can be multiple client files depending on the Web3 file)
-    └── types.bal
-```
-
-### Generate a Ballerina client for specific operations
-
-```bash
-bal web3 <web3-file-path> --operations <operation-uris>
-```
-
-This command generates a client containing methods only for the specified operation actions.
-
-For example,
-
-```bash
-bal web3 sample.web3 --operations http://sample.org/action1,http://sample.org/action2
-```
-
-### Generate a Ballerina client for a specific port
-
-```bash
-bal web3 <web3-file-path> --port <port-name>
-```
-
-This command generates a client only for the given port in the Web3 file.
-
-For example,
-
-```bash
-bal web3 calculator.web3 --port SamplePort
+utils.bal
 ```
 
 ## Building from the Source
