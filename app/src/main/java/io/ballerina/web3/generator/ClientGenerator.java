@@ -16,8 +16,12 @@
  * under the License.
  */
 
+ // TODO:  Latest copy writes
+
+
 package io.ballerina.web3.generator;
 
+// TODO:  import only specific classes rather than the whole package
 import io.ballerina.compiler.syntax.tree.*;
 import io.ballerina.tools.text.TextDocument;
 import io.ballerina.tools.text.TextDocuments;

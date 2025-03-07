@@ -22,6 +22,7 @@ import java.util.Set;
 
 public class BallerinaUtils {
     // List of Reserved Keywords in Ballerina
+    // TODO: use keywords from compiler
     private static final Set<String> RESERVED_KEYWORDS = Set.of(
             "function", "int", "boolean", "string", "record", "resource", "isolated",
             "error", "returns", "public", "private", "remote", "client", "self", "if", "else",

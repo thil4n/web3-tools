@@ -17,6 +17,7 @@
  */
 
 package io.ballerina.web3.generator.utils;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class AbiUtils {
             if (param instanceof Integer || param instanceof Long) {
                 paramEncoded = String.format("%064x", (Integer) param); // 64-character hex
             } else if (param instanceof Boolean) {
+                // TODO: Restruct
                 paramEncoded = ((Boolean) param) ? "0000000000000000000000000000000000000000000000000000000000000001"
                         : "0000000000000000000000000000000000000000000000000000000000000000";
             } else if (param instanceof String strParam) {
@@ -49,7 +51,6 @@ public class AbiUtils {
 
         return encodedParams.toString();
     }
-
 
     private static String stringToHex(String input) {
         byte[] bytes = input.getBytes(StandardCharsets.UTF_8);

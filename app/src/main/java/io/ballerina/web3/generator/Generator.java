@@ -28,6 +28,8 @@ public class Generator {
     public static void generate(List<AbiEntry> abiEntries, String outputDir) throws FormatterException {
         String sourceCode = ClientGenerator.generate(abiEntries);
 
+        // TODO : Use path for file.seperator
+        // TODO : Code gen dir
         FileUtils.writeToFile(outputDir + "/main.bal", sourceCode);
         FileUtils.copyResourceToOutput("utils.bal", outputDir);
     }

@@ -40,10 +40,12 @@ public class DynamicFunctionGenerator {
                         return convertAbiTypeToBallerina(abiType.replace("[]", "")) + "[]";
                 }
 
+                // TODO : Use specific data types
                 return switch (abiType) {
                         case "uint256", "int256", "uint8", "int8", "uint16", "int16" -> "decimal";
                         case "bool" -> "boolean";
                         case "address" -> "string";
+                        // TODO: bytes -> byte array
                         case "string", "bytes" -> "string";
                         default -> "anydata"; // Fallback
                 };
@@ -56,10 +58,12 @@ public class DynamicFunctionGenerator {
 
                 // If there's only one output, return its native type
                 if (outputs.size() == 1) {
+                        // TODO: Handle error type
                         return convertAbiTypeToBallerina(outputs.get(0).getType()) + "|error?";
                 }
 
                 // If multiple outputs, generate a record type
+                // Todo : Record name first char cap
                 String recordName = functionName + "Response";
                 StringBuilder recordType = new StringBuilder("type ").append(recordName).append(" record {| ");
 
@@ -80,6 +84,7 @@ public class DynamicFunctionGenerator {
                 StringBuilder data = new StringBuilder();
 
                 // Define the function signature
+                // TODO:  isolated res func
                 data.append("resource isolated function post ").append(methodName).append("(");
 
                 // Add function parameters
@@ -108,6 +113,7 @@ public class DynamicFunctionGenerator {
         private static String generateDecodingLogic(List<AbiOutput> outputs) {
                 String outputType = outputs.get(0).getType(); // Assuming single output for simplicity
 
+                // TODO : Handle other outputs
                 switch (outputType) {
                         case "uint256":
                         case "int256":
@@ -118,7 +124,8 @@ public class DynamicFunctionGenerator {
                                 return "string result = \"0x\" + response.result.substring(26);\n"; // Last 20 bytes
                         case "string":
                                 return "string result = response.result.substring(2);\n";
-                        case "tuple[]":
+                                // TODO: handle tuple
+                                case "tuple[]":
                                 return "anydata[] result = []; // Not yet supported \n";
                         default:
                                 return "string result = response;\n // Unsupported type: " + outputType + "\n";
