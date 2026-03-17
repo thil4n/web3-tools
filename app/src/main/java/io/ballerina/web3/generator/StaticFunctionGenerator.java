@@ -65,6 +65,23 @@ public class StaticFunctionGenerator {
     }
 
     /**
+     * Generates the function to set the sender address used for transactions.
+     * 
+     * @return The generated function definition for setting the sender.
+     */
+    private static FunctionDefinitionNode generateSetSenderFunction() {
+        String data = """
+                /// Set the sender address for transactions.
+                /// # Parameters
+                /// - `sender`: The Ethereum address to use as the sender.
+                public function setSender(string sender) {
+                    self.sender = sender;
+                }
+                """;
+        return (FunctionDefinitionNode) NodeParser.parseObjectMember(data);
+    }
+
+    /**
      * Generates the function to get the list of Ethereum accounts available on the node.
      * It performs a JSON-RPC call to retrieve the accounts.
      * 
@@ -217,6 +234,62 @@ public class StaticFunctionGenerator {
     }
 
     /**
+     * Generates the function to get the current gas price.
+     * 
+     * @return The generated function definition for getting the gas price.
+     */
+    private static FunctionDefinitionNode generateGetGasPriceFunction() {
+        String data = """
+                /// Get the current gas price in Wei.
+                /// # Returns
+                /// - `int`: The gas price in Wei.
+                /// - `error`: Error if the request fails.
+                public function getGasPrice() returns int|error {
+                    json requestBody = {
+                        "jsonrpc": "2.0",
+                        "method": "eth_gasPrice",
+                        "params": [],
+                        "id": 1
+                    };
+
+                    record { string result; } response = check self.rpcClient->post("/", requestBody);
+
+                    string sanitizedHex = response.result.substring(2);
+                    return check hexToDecimal(sanitizedHex);
+                }
+                """;
+        return (FunctionDefinitionNode) NodeParser.parseObjectMember(data);
+    }
+
+    /**
+     * Generates the function to get the chain ID.
+     * 
+     * @return The generated function definition for getting the chain ID.
+     */
+    private static FunctionDefinitionNode generateGetChainIdFunction() {
+        String data = """
+                /// Get the chain ID of the connected network.
+                /// # Returns
+                /// - `int`: The chain ID.
+                /// - `error`: Error if the request fails.
+                public function getChainId() returns int|error {
+                    json requestBody = {
+                        "jsonrpc": "2.0",
+                        "method": "eth_chainId",
+                        "params": [],
+                        "id": 1
+                    };
+
+                    record { string result; } response = check self.rpcClient->post("/", requestBody);
+
+                    string sanitizedHex = response.result.substring(2);
+                    return check hexToDecimal(sanitizedHex);
+                }
+                """;
+        return (FunctionDefinitionNode) NodeParser.parseObjectMember(data);
+    }
+
+    /**
      * Generates all the required functions and returns them as a list.
      * 
      * @return A list of function definitions.
@@ -225,10 +298,13 @@ public class StaticFunctionGenerator {
         return List.of(
                 generateInitFunction(),
                 generateSetContractAddressFunction(),
+                generateSetSenderFunction(),
                 generateGetAccountsFunction(),
                 generateGetBalanceFunction(),
                 generateGetBlockNumberFunction(),
                 generateGetTransactionCountFunction(),
+                generateGetGasPriceFunction(),
+                generateGetChainIdFunction(),
                 generateWeiToEtherFunction(),
                 generateEthToWeiFunction()
                 );
