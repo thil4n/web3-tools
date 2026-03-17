@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import org.bouncycastle.jcajce.provider.digest.Keccak;
 
 import io.ballerina.web3.abi.AbiEntry;
-import io.ballerina.web3.abi.AbiInput;
 
 public class CodeGeneratorUtils {
     public static String hashKeccak256(String str) {
@@ -43,8 +42,11 @@ public class CodeGeneratorUtils {
 
         String str = abi.getName() + "(";
         
-        for (AbiInput param : abi.getInputs()) {
-            str += param.getType();
+        for (int i = 0; i < abi.getInputs().size(); i++) {
+            if (i > 0) {
+                str += ",";
+            }
+            str += abi.getInputs().get(i).getType();
         }
         
         str += ")";

@@ -30,8 +30,10 @@ public class AbiUtils {
         for (Object param : params) {
             String paramEncoded;
 
-            if (param instanceof Integer || param instanceof Long) {
+            if (param instanceof Integer) {
                 paramEncoded = String.format("%064x", (Integer) param); // 64-character hex
+            } else if (param instanceof Long) {
+                paramEncoded = String.format("%064x", (Long) param); // 64-character hex
             } else if (param instanceof Boolean) {
                 // TODO: Restruct
                 paramEncoded = ((Boolean) param) ? "0000000000000000000000000000000000000000000000000000000000000001"

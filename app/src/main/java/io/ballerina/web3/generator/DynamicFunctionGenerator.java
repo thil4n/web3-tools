@@ -35,7 +35,6 @@ import io.ballerina.web3.generator.utils.CodeGeneratorUtils;
 public class DynamicFunctionGenerator {
 
         private static String convertAbiTypeToBallerina(String abiType) {
-                System.out.println("n" + abiType);
                 if (abiType.endsWith("[]")) {
                         return convertAbiTypeToBallerina(abiType.replace("[]", "")) + "[]";
                 }
@@ -62,20 +61,19 @@ public class DynamicFunctionGenerator {
                         return convertAbiTypeToBallerina(outputs.get(0).getType()) + "|error?";
                 }
 
-                // If multiple outputs, generate a record type
-                // Todo : Record name first char cap
-                String recordName = functionName + "Response";
-                StringBuilder recordType = new StringBuilder("type ").append(recordName).append(" record {| ");
+                // If multiple outputs, generate an inline record type
+                StringBuilder recordType = new StringBuilder("record {| ");
 
-                for (AbiOutput output : outputs) {
+                for (int i = 0; i < outputs.size(); i++) {
+                        AbiOutput output = outputs.get(i);
                         recordType.append(convertAbiTypeToBallerina(output.getType()))
                                         .append(" ")
-                                        .append(output.getName().isEmpty() ? "value" + outputs.indexOf(output)
+                                        .append(output.getName().isEmpty() ? "value" + i
                                                         : output.getName())
                                         .append("; ");
                 }
 
-                recordType.append("|};");
+                recordType.append("|}|error?");
                 return recordType.toString();
         }
 

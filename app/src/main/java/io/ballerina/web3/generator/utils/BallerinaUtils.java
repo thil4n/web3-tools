@@ -34,7 +34,9 @@ public class BallerinaUtils {
     private static String sanitizeIdentifier(String identifier, String suffixIfKeyword) {
         String sanitized = identifier.replaceAll("[^a-zA-Z0-9_]", "_");
 
-        if (Character.isDigit(sanitized.charAt(0))) {
+        if (sanitized.isEmpty()) {
+            sanitized = "_";
+        } else if (Character.isDigit(sanitized.charAt(0))) {
             sanitized = "_" + sanitized;
         }
 

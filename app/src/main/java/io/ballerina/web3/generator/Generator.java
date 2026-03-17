@@ -18,6 +18,7 @@
 
 package io.ballerina.web3.generator;
 
+import java.io.File;
 import java.util.List;
 
 import org.ballerinalang.formatter.core.FormatterException;
@@ -28,9 +29,7 @@ public class Generator {
     public static void generate(List<AbiEntry> abiEntries, String outputDir) throws FormatterException {
         String sourceCode = ClientGenerator.generate(abiEntries);
 
-        // TODO : Use path for file.seperator
-        // TODO : Code gen dir
-        FileUtils.writeToFile(outputDir + "/main.bal", sourceCode);
+        FileUtils.writeToFile(outputDir + File.separator + "main.bal", sourceCode);
         FileUtils.copyResourceToOutput("utils.bal", outputDir);
     }
 }
