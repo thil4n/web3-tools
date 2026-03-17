@@ -81,7 +81,6 @@ public class DynamicFunctionGenerator {
 
                 // If there's only one output, return its native type
                 if (outputs.size() == 1) {
-                        // TODO: Handle error type
                         return convertAbiTypeToBallerina(outputs.get(0).getType()) + "|error?";
                 }
 

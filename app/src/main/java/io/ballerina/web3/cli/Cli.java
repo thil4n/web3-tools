@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// TODO: io.ballerina.lib.web3
 package io.ballerina.web3.cli;
 
 import io.ballerina.cli.BLauncherCmd;

@@ -21,8 +21,7 @@ package io.ballerina.web3.generator.utils;
 import java.util.Set;
 
 public class BallerinaUtils {
-    // List of Reserved Keywords in Ballerina
-    // TODO: use keywords from compiler
+    // Reserved keywords in Ballerina that cannot be used as identifiers
     private static final Set<String> RESERVED_KEYWORDS = Set.of(
             "function", "int", "boolean", "string", "record", "resource", "isolated",
             "error", "returns", "public", "private", "remote", "client", "self", "if", "else",

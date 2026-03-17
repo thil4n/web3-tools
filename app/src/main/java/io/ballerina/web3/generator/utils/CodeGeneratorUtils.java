@@ -38,21 +38,19 @@ public class CodeGeneratorUtils {
         return hexString.toString();
     }
 
-    public static String generateFunctionSelector(AbiEntry abi){
+    public static String generateFunctionSelector(AbiEntry abi) {
+        StringBuilder sig = new StringBuilder(abi.getName()).append("(");
 
-        String str = abi.getName() + "(";
-        
         for (int i = 0; i < abi.getInputs().size(); i++) {
             if (i > 0) {
-                str += ",";
+                sig.append(",");
             }
-            str += abi.getInputs().get(i).getType();
+            sig.append(abi.getInputs().get(i).getType());
         }
-        
-        str += ")";
 
-        String hash = hashKeccak256(str);
+        sig.append(")");
 
+        String hash = hashKeccak256(sig.toString());
         return hash.substring(0, 8);
     }
 }

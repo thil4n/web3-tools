@@ -121,9 +121,9 @@ public class StaticFunctionGenerator {
                 /// # Parameters
                 /// - `address`: The Ethereum address.
                 /// # Returns
-                /// - `decimal`: Balance in Wei.
+                /// - `int`: Balance in Wei.
                 /// - `error`: If the request fails.
-                public function getBalance(string address) returns decimal|error {
+                public function getBalance(string address) returns int|error {
                     json requestBody = {
                         "jsonrpc": "2.0",
                         "method": "eth_getBalance",
@@ -150,9 +150,9 @@ public class StaticFunctionGenerator {
         String data = """
                 /// Get the latest block number on the Ethereum blockchain.
                 /// # Returns
-                /// - `decimal`: The block number.
+                /// - `int`: The block number.
                 /// - `error`: Error if the request fails.
-                public function getBlockNumber() returns decimal|error {
+                public function getBlockNumber() returns int|error {
                     json requestBody = {
                         "jsonrpc": "2.0",
                         "method": "eth_blockNumber",
@@ -182,9 +182,9 @@ public class StaticFunctionGenerator {
                 /// # Parameters
                 /// - `address`: The Ethereum address.
                 /// # Returns
-                /// - `decimal`: The number of transactions sent from the address.
+                /// - `int`: The number of transactions sent from the address.
                 /// - `error`: Error if the request fails.
-                public function getTransactionCount(string address) returns decimal|error {
+                public function getTransactionCount(string address) returns int|error {
                     json requestBody = {
                         "jsonrpc": "2.0",
                         "method": "eth_getTransactionCount",

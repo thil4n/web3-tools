@@ -16,9 +16,6 @@
  * under the License.
  */
 
- // TODO:  Latest copy writes
-
-
 package io.ballerina.web3.generator;
 
 import io.ballerina.compiler.syntax.tree.ClassDefinitionNode;
