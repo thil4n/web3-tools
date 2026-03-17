@@ -310,7 +310,10 @@ public class DynamicFunctionGenerator {
                 if (!outputs.isEmpty() && isReadOnly) {
                         String decodingLogic = generateDecodingLogic(outputs);
                         result.append(decodingLogic);
-                        result.append("return result;");
+                        // Multi-output decoding already includes its own return statement
+                        if (outputs.size() == 1) {
+                                result.append("return result;");
+                        }
                 } else if (!isReadOnly) {
                         // State-mutating functions return the transaction hash
                         result.append("string result = response.result;\n");

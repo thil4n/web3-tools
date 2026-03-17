@@ -21,11 +21,21 @@
 
 package io.ballerina.web3.generator;
 
-// TODO:  import only specific classes rather than the whole package
-import io.ballerina.compiler.syntax.tree.*;
+import io.ballerina.compiler.syntax.tree.ClassDefinitionNode;
+import io.ballerina.compiler.syntax.tree.ImportDeclarationNode;
+import io.ballerina.compiler.syntax.tree.ModuleMemberDeclarationNode;
+import io.ballerina.compiler.syntax.tree.ModulePartNode;
+import io.ballerina.compiler.syntax.tree.Node;
+import io.ballerina.compiler.syntax.tree.NodeFactory;
+import io.ballerina.compiler.syntax.tree.NodeList;
+import io.ballerina.compiler.syntax.tree.NodeParser;
+import io.ballerina.compiler.syntax.tree.SyntaxKind;
+import io.ballerina.compiler.syntax.tree.SyntaxTree;
 import io.ballerina.tools.text.TextDocument;
 import io.ballerina.tools.text.TextDocuments;
 import io.ballerina.web3.abi.AbiEntry;
+import io.ballerina.web3.generator.utils.CodeGeneratorUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +46,22 @@ public class ClientGenerator {
 
         public static String generate(List<AbiEntry> abiEntries) throws FormatterException {
 
+                // Separate functions and events
+                List<AbiEntry> functions = new ArrayList<>();
+                List<AbiEntry> events = new ArrayList<>();
+
+                for (AbiEntry entry : abiEntries) {
+                        if ("function".equals(entry.getType())) {
+                                functions.add(entry);
+                        } else if ("event".equals(entry.getType())) {
+                                events.add(entry);
+                        }
+                }
+
                 // Using NodeParser API with templates to generate client declaration
                 ClassDefinitionNode serviceDecl = (ClassDefinitionNode) NodeParser.parseModuleMemberDeclaration(
                                 "public client class Web3 {}");
 
-                // Using NodeFactory API to modify service declaration with resource methods
                 List<Node> members = new ArrayList<>();
 
                 StringBuilder data = new StringBuilder();
@@ -51,8 +72,8 @@ public class ClientGenerator {
                 data.append("\n// The contract address.\n");
                 data.append("private string address;\n");
 
-                data.append("\n// The address of the sender.\n");
-                data.append("private string|() sender = ();\n");
+                data.append("\n// The address of the sender (used for transactions).\n");
+                data.append("private string sender = \"\";\n");
 
                 data.append("\n// HTTP client to send JSON-RPC requests to the Ethereum node.\n");
                 data.append("private final http:Client rpcClient;\n");
@@ -62,17 +83,27 @@ public class ClientGenerator {
                 members.add(clientProperties);
 
                 members.addAll(StaticFunctionGenerator.generate());
-                members.addAll(DynamicFunctionGenerator.generate(abiEntries));
+                members.addAll(DynamicFunctionGenerator.generate(functions));
 
                 NodeList<Node> memberNodeList = NodeFactory.createNodeList(members);
 
                 serviceDecl = serviceDecl.modify().withMembers(memberNodeList).apply();
 
-                // Create a ModulePartNode including the import and service
+                // Build module members: event constants + client class
                 List<ModuleMemberDeclarationNode> moduleMembers = new ArrayList<>();
+
+                // Generate event topic hash constants
+                for (AbiEntry event : events) {
+                        String eventHash = generateEventTopicHash(event);
+                        if (eventHash != null) {
+                                ModuleMemberDeclarationNode eventConst = (ModuleMemberDeclarationNode)
+                                                NodeParser.parseModuleMemberDeclaration(eventHash);
+                                moduleMembers.add(eventConst);
+                        }
+                }
+
                 moduleMembers.add(serviceDecl);
 
-                // Using NodeParser API to parse import declaration
                 ImportDeclarationNode importDecl = (ImportDeclarationNode) NodeParser.parseImportDeclaration(
                                 "import ballerina/http;");
 
@@ -81,16 +112,32 @@ public class ClientGenerator {
                                 NodeFactory.createNodeList(moduleMembers),
                                 NodeFactory.createToken(SyntaxKind.EOF_TOKEN));
 
-                // Generate the source code
                 String sourceCode = modulePartNode.toSourceCode();
 
-                // Parse the source code
                 TextDocument textDocument = TextDocuments.from(sourceCode);
                 SyntaxTree syntaxTree = SyntaxTree.from(textDocument);
                 syntaxTree = Formatter.format(syntaxTree);
 
-                String formattedSourceCode = syntaxTree.toSourceCode();
+                return syntaxTree.toSourceCode();
+        }
 
-                return formattedSourceCode;
+        private static String generateEventTopicHash(AbiEntry event) {
+                if (event.getName() == null) {
+                        return null;
+                }
+                StringBuilder sig = new StringBuilder(event.getName()).append("(");
+                if (event.getInputs() != null) {
+                        for (int i = 0; i < event.getInputs().size(); i++) {
+                                if (i > 0) {
+                                        sig.append(",");
+                                }
+                                sig.append(event.getInputs().get(i).getType());
+                        }
+                }
+                sig.append(")");
+                String hash = CodeGeneratorUtils.hashKeccak256(sig.toString());
+                String constName = "EVENT_" + event.getName().replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase();
+                return String.format("# Event topic hash for `%s`\npublic const string %s = \"0x%s\";\n",
+                                sig, constName, hash);
         }
 }

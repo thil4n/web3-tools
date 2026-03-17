@@ -50,18 +50,28 @@ public class Cli implements BLauncherCmd {
             return;
         }
 
+        if (abiPath == null || abiPath.isBlank()) {
+            System.err.println("Error: ABI file path is required. Use -a <path/to/abi.json>");
+            return;
+        }
+
         if (!isFileValid(abiPath)) {
             System.err.println("Error: ABI file does not exist or is not a valid file: " + abiPath);
             return;
         }
 
-        System.out.println("ABI File: " + abiPath);
-        System.out.println("Output Directory: " + outputDir);
+        if (!abiPath.endsWith(".json")) {
+            System.err.println("Error: ABI file must be a JSON file: " + abiPath);
+            return;
+        }
 
         try {
             generateBallerinaConnector();
+            System.out.println("Ballerina connector generated successfully.");
+            System.out.println("  ABI File: " + abiPath);
+            System.out.println("  Output Directory: " + outputDir);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error generating Ballerina connector: " + e.getMessage());
         }
     }
 

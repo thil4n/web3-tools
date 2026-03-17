@@ -48,14 +48,10 @@ public class AbiReader {
 
         AbiEntry[] abiEntries = contractJson.getAbi();
 
-        List<AbiEntry> functions = Arrays.stream(abiEntries)
-                .filter(entry -> "function".equals(entry.getType()))
-                .collect(Collectors.toList());
-
-        if (functions.isEmpty()) {
-            throw new Exception("No functions found in ABI: " + abiPath);
+        if (abiEntries.length == 0) {
+            throw new Exception("Empty ABI in: " + abiPath);
         }
 
-        return functions;
+        return Arrays.asList(abiEntries);
     }
 }
