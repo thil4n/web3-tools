@@ -5,102 +5,206 @@
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/thil4n/web3-tools.svg)](https://github.com/thil4n/web3-tools/commits/master)
 [![GitHub issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/web3-tools.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-library/labels/module%2Fweb3-tools)
 
-The Ballerina-Web3-Tool is a development toolkit designed to simplify the integration of Web3 functionalities into Ballerina applications.
-It provides a seamless experience for developers to interact with Ethereum-based blockchains, enabling smart contract interactions, account management, and transaction processing.
+The Ballerina Web3 Tool automatically generates type-safe [Ballerina](https://ballerina.io/) client connectors from Ethereum smart contract ABI (Application Binary Interface) JSON files. Instead of manually writing boilerplate code to interact with smart contracts, point this tool at an ABI file and get a ready-to-use Ballerina client with methods for every contract function, plus built-in Ethereum RPC helpers.
+
+### What you get
+
+- **Smart contract client** — each function in your Solidity contract becomes a Ballerina resource method.
+- **Ethereum RPC helpers** — `getAccounts()`, `getBalance()`, `getBlockNumber()`, `getTransactionCount()`, plus Wei ⟷ Ether conversions out of the box.
+- **Utility functions** — parameter encoding, hex conversion, and more, generated alongside the client.
 
 ## Installation
 
-Execute the command below to pull the Web3 tool from [Ballerina Central](https://central.ballerina.io/ballerina/web3/latest).
+Pull the tool from [Ballerina Central](https://central.ballerina.io/ballerina/web3/latest):
 
 ```bash
 bal tool pull web3
 ```
 
+## Quick Start
+
+Given a `SimpleStorage.json` ABI file:
+
+```bash
+bal web3 -a SimpleStorage.json
+```
+
+This generates two files in your current directory:
+
+| File | Description |
+|------|-------------|
+| `main.bal` | A `Web3` client class with contract methods and Ethereum RPC helpers |
+| `utils.bal` | Helper functions for parameter encoding and hex conversion |
+
+You can then use the generated client:
+
+```ballerina
+import ballerina/io;
+
+public function main() returns error? {
+    Web3 client = check new ("http://localhost:8545", "0xYourContractAddress");
+    
+    // Call a contract method
+    decimal value = check client->/retrieve.post();
+    io:println("Stored value: ", value);
+    
+    // Use built-in helpers
+    decimal balance = check client.getBalance("0xYourAddress");
+    io:println("Balance in ETH: ", client.weiToEther(balance));
+}
+```
+
 ## Usage
 
-The Web3 tool provides the following capabilities.
-
-1. Generate Ballerina client for interacting with basic Blockchain features.
-2. Generate Ballerina connector for specific Smart contract.
-
-The client generated from a smart contract can be used to call the methods defined in the solidity smart contract.
-
-The following command will generate Ballerina client for the given smart contract.
-
 ```bash
-bal web3 -a <abi-file-path> -o <output-file-path>
+bal web3 -a <abi-file-path> [-o <output-directory>]
 ```
 
-### Command options
+### Command Options
 
-| Option            | Description                                                                                    | Mandatory/Optional |
-| ----------------- | ---------------------------------------------------------------------------------------------- | ------------------ |
-| `<abi-file-path>` | The path of the Solidity ABI file.                                                             | Mandatory          |
-| `<output-path>`   | The path of the output directory. If not provided, the current working directory will be used. | Optional           |
+| Option | Description | Required |
+|--------|-------------|----------|
+| `-a`, `--abi` | Path to the Solidity ABI JSON file | Yes |
+| `-o`, `--output` | Output directory (defaults to current directory) | No |
+| `-h`, `--help` | Display help information | No |
 
-For example,
+### Examples
 
 ```bash
+# Generate client from a token contract ABI
 bal web3 -a Token.json
+
+# Specify an output directory
+bal web3 -a Token.json -o ./generated
 ```
 
-Upon successful execution, the following files will be created inside the default module in the Ballerina project.
+## Generated Client API
 
-```bash
-client.bal (There can be multiple client files depending on the Web3 file)
-utils.bal
+### Static Methods (always included)
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `init` | `init(string api, string address) returns error?` | Initialize with RPC URL and contract address |
+| `setContractAddress` | `setContractAddress(string address)` | Change the target contract address |
+| `getAccounts` | `getAccounts() returns string[]\|error` | List available accounts |
+| `getBalance` | `getBalance(string address) returns decimal\|error` | Get account balance in Wei |
+| `getBlockNumber` | `getBlockNumber() returns decimal\|error` | Get the latest block number |
+| `getTransactionCount` | `getTransactionCount(string address) returns decimal\|error` | Get transaction count for an address |
+| `weiToEther` | `weiToEther(decimal weiAmount) returns decimal` | Convert Wei to Ether |
+| `ethToWei` | `ethToWei(decimal etherValue) returns decimal` | Convert Ether to Wei |
+
+### Dynamic Methods (generated from ABI)
+
+Each function defined in the smart contract ABI becomes a Ballerina resource method. For example, a Solidity `store(uint256)` function generates:
+
+```ballerina
+resource isolated function post store(decimal _value) returns error? { ... }
 ```
 
-## Building from the Source
+## Solidity → Ballerina Type Mapping
 
-### Setting Up the Prerequisites
+| Solidity Type | Ballerina Type |
+|---------------|----------------|
+| `uint8`, `uint256`, `int8`, `int256`, etc. | `decimal` |
+| `bool` | `boolean` |
+| `address` | `string` |
+| `string` | `string` |
+| `bytes` | `string` |
+| `T[]` (arrays) | `T[]` |
+| Multiple return values | `record { ... }` |
 
-1. OpenJDK 21 ([Adopt OpenJDK](https://adoptopenjdk.net/) or any other OpenJDK distribution)
+## How It Works
 
-   > **Info:** You can also use [Oracle JDK](https://www.oracle.com/java/technologies/javase-downloads.html). Set the JAVA_HOME environment variable to the pathname of the directory into which you installed JDK.
+```
+ABI JSON File
+     │
+     ▼
+┌──────────┐
+│ AbiReader │  ── Parses JSON, extracts function signatures
+└────┬─────┘
+     │
+     ▼
+┌────────────────┐
+│ ClientGenerator │
+├────────┬───────┘
+│        │
+│   ┌────▼──────────────────┐
+│   │ StaticFunctionGenerator │  ── Adds standard Ethereum RPC methods
+│   └───────────────────────┘
+│
+│   ┌────▼───────────────────┐
+│   │ DynamicFunctionGenerator │  ── Generates contract-specific methods
+│   │  • Keccak256 function selectors
+│   │  • Parameter encoding
+│   │  • Response decoding
+│   └────────────────────────┘
+│
+     ▼
+┌───────────┐
+│ Formatter  │  ── Formats via Ballerina compiler APIs
+└─────┬─────┘
+      │
+      ▼
+  main.bal + utils.bal
+```
 
-2. Export GitHub Personal access token with read package permissions as follows,
-   ```
+## Building from Source
+
+### Prerequisites
+
+1. **OpenJDK 21** — [Adoptium](https://adoptium.net/) or [Oracle JDK](https://www.oracle.com/java/technologies/javase-downloads.html)
+
+   Set `JAVA_HOME` to point to your JDK installation.
+
+2. **GitHub credentials** with read package permissions:
+   ```bash
    export packageUser=<Username>
    export packagePAT=<Personal access token>
    ```
 
-### Building the Source
+### Build Commands
 
-Execute the commands below to build from the source.
+```bash
+# Build the project
+./gradlew clean build
 
-1.  To build the library:
+# Run tests
+./gradlew clean test
 
-        ./gradlew clean build
+# Build without tests
+./gradlew clean build -x test
 
-2.  To run the integration tests:
+# Publish to Maven local
+./gradlew clean build publishToMavenLocal
 
-        ./gradlew clean test
+# Publish to local Ballerina Central
+./gradlew clean build -PpublishToLocalCentral=true
 
-3.  To build the module without the tests:
+# Publish to Ballerina Central
+./gradlew clean build -PpublishToCentral=true
+```
 
-        ./gradlew clean build -x test
+### Key Dependencies
 
-4.  To publish to maven local:
+| Dependency | Purpose |
+|-----------|---------|
+| Jackson (`jackson-databind`) | ABI JSON parsing |
+| Ballerina Compiler APIs | Syntax tree generation & formatting |
+| Picocli | CLI argument parsing |
+| BouncyCastle | Keccak256 hashing for function selectors |
+| Commons IO | File utilities |
 
-        ./gradlew clean build publishToMavenLocal
+## Known Limitations
 
-5.  Publish the generated artifacts to the local Ballerina central repository:
+- `bytes` types are currently mapped to `string` rather than byte arrays.
+- `tuple` types are not yet supported.
+- Multiple output decoding is basic — record types are generated but decoding logic is minimal.
 
-        ./gradlew clean build -PpublishToLocalCentral=true
-
-6.  Publish the generated artifacts to the Ballerina central repository:
-
-        ./gradlew clean build -PpublishToCentral=true
-
-## Contributing to Ballerina
+## Contributing
 
 As an open-source project, Ballerina welcomes contributions from the community.
 
-You can also check for [open issues](https://github.com/thil4n/web3-tools/issues) that
-interest you. We look forward to receiving your contributions.
-
-For more information, go to the [contribution guidelines](https://github.com/ballerina-platform/ballerina-lang/blob/master/CONTRIBUTING.md).
+Check for [open issues](https://github.com/thil4n/web3-tools/issues) that interest you, or submit a pull request. See the [contribution guidelines](https://github.com/ballerina-platform/ballerina-lang/blob/master/CONTRIBUTING.md) for details.
 
 ## Code of Conduct
 
@@ -108,6 +212,10 @@ All contributors are encouraged to read the [Ballerina Code of Conduct](https://
 
 ## Useful Links
 
-- Chat live with us via our [Discord server](https://discord.gg/ballerinalang).
-- Post all technical questions on Stack Overflow with the [#ballerina](https://stackoverflow.com/questions/tagged/ballerina) tag.
-- View the [Ballerina performance test results](https://github.com/ballerina-platform/ballerina-lang/blob/master/performance/benchmarks/summary.md).
+- [Discord](https://discord.gg/ballerinalang) — Chat with the community
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/ballerina) — Ask technical questions (`#ballerina`)
+- [Ballerina Performance Benchmarks](https://github.com/ballerina-platform/ballerina-lang/blob/master/performance/benchmarks/summary.md)
+
+## License
+
+This project is licensed under the [Apache License 2.0](LICENSE).
