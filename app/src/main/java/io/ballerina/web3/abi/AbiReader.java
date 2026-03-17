@@ -26,30 +26,36 @@ import java.util.stream.Collectors;
 
 public class AbiReader {
 
-    private String abiPath;
+    private final String abiPath;
 
     public AbiReader(String abiPath) {
         this.abiPath = abiPath;
     }
 
-    private static final List<String> METHODS_TO_SKIP = List.of(
-            "safeTransferFrom", "approve", "setApprovalForAll", "transferFrom", "renounceOwnership",
-            "isApprovedForAll", "owner", "supportsInterface", "symbol", "getApproved");
-
     public List<AbiEntry> read() throws Exception {
-
-        // Load ABI JSON file
         ObjectMapper objectMapper = new ObjectMapper();
         File file = new File(abiPath);
 
-        // Deserialize JSON
+        if (!file.exists()) {
+            throw new Exception("ABI file not found: " + abiPath);
+        }
+
         ContractJson contractJson = objectMapper.readValue(file, ContractJson.class);
+
+        if (contractJson == null || contractJson.getAbi() == null) {
+            throw new Exception("Invalid ABI JSON: missing 'abi' field in " + abiPath);
+        }
 
         AbiEntry[] abiEntries = contractJson.getAbi();
 
-        return Arrays.stream(abiEntries)
-                .filter(entry -> "function".equals(entry.getType())) // Consider only functions
-                .filter(entry -> !METHODS_TO_SKIP.contains(entry.getName())) // Skip default methods
+        List<AbiEntry> functions = Arrays.stream(abiEntries)
+                .filter(entry -> "function".equals(entry.getType()))
                 .collect(Collectors.toList());
+
+        if (functions.isEmpty()) {
+            throw new Exception("No functions found in ABI: " + abiPath);
+        }
+
+        return functions;
     }
 }
